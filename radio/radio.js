@@ -430,13 +430,11 @@ function _init() {
 		window.clearTimeout(stationTimeout);
 	});
 
-	function parseTracksHermes(reply, seed, startPlaying, source, context, element, target) {
+	function parseTracksHermes(reply, seed, startPlaying) {
 		var newTracks;
     	newTracks = sp.core.parseHermesReply("Tracks", reply);
         console.log("[RADIO] source: ", newTracks.source);
         console.log("[RADIO] identity: ", newTracks.identity);
-        sp.core.logClientEvent("", "loadstation", "1", "1",
-            {"source": source, "context": context, "element": element, "target": target, "targetsource": newTracks.source });
 		stationAvailable(seed, newTracks, startPlaying, newTracks.source);
 	}
 
@@ -460,7 +458,9 @@ function _init() {
 							stationNotFound(seed);
 							return;
 						}
-						parseTracksHermes(s, seed, startPlaying, source, context, element, target);
+                        sp.core.logClientEvent("", "loadstation", "1", "1",
+                            {"source": source, "context": context, "element": element, "target": target });
+						parseTracksHermes(s, seed, startPlaying);
 					},
 					onFailure: function (_) {
 						console.log('[RADIO] Failed to load fallback station for : ', seed, ': hermes failure', arguments);
@@ -550,7 +550,9 @@ function _init() {
 					handleFail(context, element, target);
 					return;
 				}
-				parseTracksHermes(s, newSeed, startPlaying, source, context, element, target);
+                sp.core.logClientEvent("", "loadstation", "1", "1",
+                    {"source": source, "context": context, "element": element, "target": target });
+				parseTracksHermes(s, newSeed, startPlaying);
 			},
 			onFailure: function(_) {
 				console.log('[RADIO] Failed to load station for : ', newSeed, ': hermes failure', arguments);
@@ -777,8 +779,35 @@ function _init() {
 		hideLoadingScreen();
 
 		if (startPlaying) {
-			playCurrentTrack();
-		} else {
+			// Disable the skip button until the track starts playing completely
+			var skip = dom.queryOne('#playing-skip>a');
+			skip.className += "disabled";
+
+			sp.trackPlayer.playTrackFromContext(temporaryPlaylist.uri, 0, "", {
+				onSuccess: function (s) {
+					console.log("[RADIO] play ok");
+                                },
+				onError: function(_) { console.log("[RADIO] play error"); },
+				onComplete: function(_) { 
+					var check = function() {
+						// Enable the skip button when the global skip button is enabled.
+						// Prevents "track not found" errors when the use skips very fast.
+						var playingTrack = sp.trackPlayer.getNowPlayingTrack();
+						if (typeof playingTrack === 'undefined' || 
+							playingTrack === null ||
+							playingTrack.track.uri !== curTrackUri) {
+							setTimeout(check, 500);
+						} else {
+							skip.className = skip.className.replace(/disabled/g, '');
+							updatePlayPauseControls();
+						}
+					};
+					check();
+					console.log("[RADIO] play complete"); 
+				}
+			});
+		}
+		else {
 			// Because the radio needs to consider outside songs playing before coming here
 			updatePlayPauseControls();
 		}
@@ -788,67 +817,20 @@ function _init() {
 		trackUsage();
 	}
 
-	// Tell the C++ client to play the current track. This function skips most of
-	// the UI updates that happen when transitioning from one track to the next.
-	function playCurrentTrack() {
-		// Disable the skip button until the track starts playing completely
-		var skip = dom.queryOne('#playing-skip>a');
-		skip.className += "disabled";
-
-		var temporaryPlaylist = getTemporaryPlaylist();
-		sp.trackPlayer.playTrackFromContext(temporaryPlaylist.uri, 0, "", {
-			onSuccess: function (s) {
-				console.log("[RADIO] play ok");
-															},
-			onError: function(_) { console.log("[RADIO] play error"); },
-			onComplete: function(_) { 
-				var check = function() {
-					// Enable the skip button when the global skip button is enabled.
-					// Prevents "track not found" errors when the user skips very fast.
-					var playingTrack = sp.trackPlayer.getNowPlayingTrack();
-					if (typeof playingTrack === 'undefined' || 
-						playingTrack === null ||
-						playingTrack.track.uri !== curTrackUri) {
-						setTimeout(check, 500);
-					} else {
-						skip.className = skip.className.replace(/disabled/g, '');
-						updatePlayPauseControls();
-					}
-				};
-				check();
-				console.log("[RADIO] play complete"); 
-			}
-		});
-	}
-
-  // TODO(djlee): globals :( Refactor this file to keep state on a RadioPlayer
-	// object or similar.
-	var previousContext = [];
-	var currentContext = [];
-
 	function playerStateChanged(event) {
+		console.log('[RADIO] playerStateChanged', event);
 		// If the current track & play state changed
 		// the track started or ended, we then
 		// check what's playing, and if nothing, the track ended
-		console.log("playerStateChanged event", event);
-		if (event.data.curcontext) {
-			previousContext = currentContext;
-			currentContext = sp.trackPlayer.getPlayingContext();
-			console.log("context changed, previousContext: ", previousContext);
-		}
-
 		if (!event.data.playstate)
 			return;
 
-		var temporaryPlaylist = getTemporaryPlaylist();
+        var temporaryPlaylist = getTemporaryPlaylist();
 		console.log("[RADIO] temp list is", temporaryPlaylist);
 
 		if (event.data.curtrack) {
-			console.log("[RADIO] Track ended or skipped.");
-
-			var playingContext = sp.trackPlayer.getPlayingContext();
-			console.log("[RADIO] playing context: ", playingContext);
-			if (playingContext.length && playingContext[0] === temporaryPlaylist.uri) {
+			console.log("[RADIO] Track ended.");
+			if (sp.trackPlayer.getPlayingContext()[0] === temporaryPlaylist.uri) {
 				console.log("[RADIO] In radio. Did new track already start?.");
 				if (!sp.trackPlayer.getNowPlayingTrack()) {
 					console.log("[RADIO] No new track started, playing next.");
@@ -861,15 +843,6 @@ function _init() {
 					}
 					playTrack(false);
 					findNextTrack(false);
-				}
-			} else {
-				// If playingContext doesn't match, either user switched to a different
-				// playlist or we hit the race condition from JIRA ticket 3478. We can
-				// tell based on whether a song is playing.
-				if (playingContext.length == 0 && previousContext[0] == temporaryPlaylist.uri
-						&& !sp.trackPlayer.getIsPlaying()) {
-					console.log('[RADIO] working around temp playlist race condition');
-					playCurrentTrack();
 				}
 			}
 		}

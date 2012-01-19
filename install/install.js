@@ -180,7 +180,6 @@ function _launchApplication()
 	setTimeout(function()
 	{
 		console.log("Waited for " + wait + " ms before launching app.");
-		loadTime = Date.now();
 		window.location.href = _getArg();
 	},
 	wait);

@@ -1,7 +1,6 @@
 {
 	"BundleType": "Application",
 	"UserInstallable": false,
-	"PlaybackOwner": false,
 	"ApiPermissions" : {
 		"core" : ["private"],
 		"social" : ["private"]

@@ -1,7 +1,6 @@
 {
 	"BundleType": "Application",
 	"UserInstallable": false,
-	"PlaybackOwner": false,
 	"RequiredPermissions": [
 		"https://fbcdn-profile-*.akamaihd.net",
 		"http://*.fbcdn.net"

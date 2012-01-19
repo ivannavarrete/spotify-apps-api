@@ -15,7 +15,7 @@ var wrapper = dom.id('wrapper'),
 
 function init()
 {
-	var search_query = sp.core.getArguments().join(':').decodeForText();
+	var search_query = sp.core.getArguments().join(':');
 	if (!search_query) {
 		search_query = 'stone roses';
 	}
@@ -25,8 +25,9 @@ function init()
 
 	sp.core.search(search_query, true, true, {
 		onSuccess: function(result) {
+			console.log(result);
 			if (result.did_you_mean) {
-				buildDYM(result.did_you_mean.decodeForHTML(), result.did_you_mean_link);
+				buildDYM(result.did_you_mean, result.did_you_mean_link);
 			}
 			if (result.playlists && result.playlists.length > 0) {
 				playlists = result.playlists;
@@ -109,20 +110,20 @@ function PlaylistsDataSource()
 	this.makeNode = function(index)
 	{
 		var d = playlists[index], li = new dom.Element('li'),
-			img = new ui.SPImage((d.cover ? d.cover : ''), d.uri, d.name.decodeForHTML()),
+			img = new ui.SPImage((d.cover ? d.cover : ''), d.uri, d.name),
 			text = new dom.Element('span', {className: 'text'});
-		var pl_text = '<a href="'+d.uri+'" class="name">'+d.name.decodeForHTML()+'</a>';
+		var pl_text = '<a href="'+d.uri+'" class="name">'+d.name+'</a>';
 		text.innerHTML = pl_text;
 
 		if (d.owner.uri != sp.core.user.uri) {
 			// only show owner if the user isn't the author
-			text.innerHTML += '<a href="'+d.owner.uri+'" class="artist">'+d.owner.name.decodeForHTML()+'</a>';
+			text.innerHTML += '<a href="'+d.owner.uri+'" class="artist">'+d.owner.name+'</a>';
 
 			// lookup a nicer name if available, to get rid of ugly digits
-			sp.social.getUserByUsername(d.owner.name.decodeForText(), {
+			sp.social.getUserByUsername(d.owner.name, {
 				onSuccess: function(r) {
 					// try getting real name, and rewrite text
-					text.innerHTML = pl_text + '<a href="'+d.owner.uri+'" class="artist">'+r.name.decodeForHTML()+'</a>';
+					text.innerHTML = pl_text + '<a href="'+d.owner.uri+'" class="artist">'+r.name+'</a>';
 				},
 				onFailure: function() {
 					// we're already falling back to what we got in the playlist result
@@ -147,9 +148,9 @@ function ArtistsDataSource()
 	this.makeNode = function(index)
 	{
 		var d = artists[index], li = new dom.Element('li'),
-			img = new ui.SPImage(d.portrait, d.uri, d.name.decodeForHTML()),
+			img = new ui.SPImage(d.portrait, d.uri, d.name),
 			text = new dom.Element('span', {className: 'text'});
-		text.innerHTML = '<a href="'+d.uri+'" class="name">'+d.name.decodeForHTML()+'</a>'
+		text.innerHTML = '<a href="'+d.uri+'" class="name">'+d.name+'</a>'
 		dom.adopt(li, img.node, text);
 		return li;
 	};
@@ -168,10 +169,10 @@ function AlbumsDataSource()
 	this.makeNode = function(index)
 	{
 		var d = albums[index], li = new dom.Element('li'),
-			img = new ui.SPImage(d.cover, d.uri, d.name.decodeForHTML()),
+			img = new ui.SPImage(d.cover, d.uri, d.name),
 			text = new dom.Element('span', {className: 'text'});
-		text.innerHTML = '<a href="'+d.uri+'" class="name">'+d.name.decodeForHTML()+'</a>'
-			+'<a href="'+d.artist.uri+'" class="artist">'+d.artist.name.decodeForHTML()+'</a>';
+		text.innerHTML = '<a href="'+d.uri+'" class="name">'+d.name+'</a>'
+			+'<a href="'+d.artist.uri+'" class="artist">'+d.artist.name+'</a>';
 		dom.adopt(li, img.node, text);
 		return li;
 	};
