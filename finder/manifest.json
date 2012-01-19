@@ -1,0 +1,26 @@
+{
+	"BundleType": "Application",
+	"RequiredPermissions": [
+	],
+  "UserInstallable": false,
+	"ApiPermissions" : {
+		"installer" : ["private"]
+	},
+	"AppIcon": {
+		"36x18": "assets/img/appfinder.png"
+	},
+	"AppName": {
+		"en": "App Finder",
+		"fr": "Recherche d'applis",
+		"es": "Buscador de apps",
+		"de": "App Finder",
+		"nl": "App Finder"
+	},
+	"SupportedLanguages": [
+		"en",
+		"fr",
+		"es",
+		"de",
+		"nl"
+	]
+}

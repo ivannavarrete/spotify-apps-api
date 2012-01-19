@@ -1,0 +1,16 @@
+{
+	"BundleType": "Application",
+	"UserInstallable": false,
+	"PlaybackOwner": false,
+	"ApiPermissions" : {
+		"core" : ["private"],
+		"social" : ["private"]
+	},
+	"SupportedLanguages": [
+		"en",
+		"fr",
+		"es",
+		"de",
+		"nl"
+	]
+}

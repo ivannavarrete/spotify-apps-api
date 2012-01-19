@@ -1,0 +1,19 @@
+{
+	"BundleType": "Application",
+	"ApiPermissions": {
+		"core": ["private"],
+		"installer": ["private"]
+	},
+	"RequiredPermissions": [
+		"http://*",
+		"https://*"
+	],
+	"SupportedLanguages": [
+		"de",
+		"en",
+		"es",
+		"fr",
+		"nl"
+	],
+	"UserInstallable": false
+}

@@ -1,0 +1,208 @@
+@import url("sp://import/css/eve.css");
+@import url("sp://import/css/api.css");
+
+article {
+	text-align: center;
+	margin-top: 50px;
+}
+
+article img {
+	margin-bottom: 10px;
+}
+
+article h1 {
+	color: #757575;
+	font-size: 20px;
+	line-height: 28px;
+	margin-bottom: 10px;
+}
+
+article h2 {
+	color: #A5A5A5;
+	line-height: 22px;
+}
+
+article .new-button {
+	text-decoration: none;
+}
+
+.fill {
+	bottom: 0px;
+	left: 0px;
+	position: absolute;
+	right: 0px;
+	top: 25px;
+}
+
+.grid {
+	background: #ecebe8;
+}
+
+#loading {
+	opacity: 0;
+	z-index: 1;
+	-webkit-transition: opacity 0.5s linear 0.5s;
+}
+
+#loading.visible {
+	opacity: 1;
+}
+
+div.user {
+	box-sizing: border-box;
+	height: 160px;
+	line-height: 15px;
+	overflow: hidden;
+	padding: 20px;
+	text-align: center;
+	vertical-align: top;
+	width: 130px;
+}
+
+a.userlink {
+	margin-left: auto;
+	margin-right: auto;
+	display: inline;
+	width: 128px;
+	height: 128px;
+}
+
+.favorite-button {
+	opacity: 0;
+	position: relative;
+	top: 100px;
+	-webkit-transition: opacity 0.1s linear 0.3s;
+}
+
+div.image:hover .favorite-button {
+	opacity: 1;
+}
+
+div.image {
+	-webkit-box-shadow: inset 0 1px 0 rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .53);
+	-webkit-user-drag: element;
+
+	background-color: #c1c0be;
+	background-image: url("sp://import/img/placeholders/128-user-light.png");
+	background-size: cover;
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	/*
+	border: 1px solid;
+	border-color: #848483 #939391 #9a9a98;
+	*/
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), inset 0 0 1px rgba(0,0,0,0.4), 0 1px 0px rgba(255,255,255,0.5);
+	border: 0;
+
+	border-radius: 3px;
+	box-sizing: border-box;
+	display: block;
+	height: 128px;
+	position: relative;
+	overflow: hidden;
+	width: 128px;
+}
+
+span.username {
+        font-weight: bold;
+	display: block;
+	margin-top: 5px;
+	-webkit-user-drag: element;
+}
+
+span.presence {
+	display: block;
+	font-size: 11px;
+	vertical-align: top;
+}
+
+.presence a {
+    #color: #727272;
+}
+
+.presence .track a:first-child:before {
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	content: "";
+	background-image: url("sp://import/img/buddylist-track-icon.png");
+}
+
+.presence .playlist a:first-child:before {
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	content: "";
+	background-image: url("sp://import/img/buddylist-playlist-icon.png");
+}
+
+.presence .starred :first-child:before {
+	display: inline-block;
+	width: 13px;
+	height: 13px;
+	content: "";
+	background-image: url("sp://import/img/buddylist-starred-icon.png");
+}
+
+.filter-bar {
+   position: relative;
+   width: 100%;
+   height: 24px;
+   background: url('sp://import/img/filter_bar-bg.png') no-repeat, -webkit-gradient(linear, left top, left bottom, color-stop(0, #ededed), color-stop(1, #d9d9d9));
+   border-bottom-width: 1px;
+   border-bottom-style: solid;
+   border-bottom-color: #a6a6a6;
+}
+
+.filter-bar #no-matches {
+   display: none;
+   color: black;
+   position: absolute;
+   top: 3px;
+   left: -73px;
+   font-size: 0.9em;
+}
+
+#filter-bar-text {
+   position: relative;
+   font-size: 1.29em;
+   top: 4px;
+   float: left;
+   left: 26px;
+   font-weight: bold;
+   color: rgb(112,112,112);
+   font-family: "Helvetica", "Arial", sans-serif;
+}
+
+#field-container {
+   position: relative;
+   float: right;
+   top: 0px;
+}
+
+.filter-field {
+   padding: 2px 5px 2px 19px;
+   font-size: 11px;
+   position: relative;;
+   top: 3px;
+   margin-right: 11px;
+   -webkit-border-radius: 16px;
+   width: 183px;
+   height: 13px;
+   -webkit-box-shadow: 0px 1px 0px rgba(255,255,255,0.9), 0px 1px 0px rgba(0,0,0,0.15) inset;
+   border: 1px solid rgba(0,0,0,0.5);
+   color: rgb(0,0,0);
+   background: rgb(255,255,255) url('sp://import/img/filter-field-icon.png') no-repeat 4px 3px;
+   float: right
+}
+
+#clear {
+   display: none;
+   background: url('sp://import/img/close_button_small.png') 0 12px;
+   position: absolute;
+   width: 12px;
+   height: 12px;
+   left: 192px;
+   top: 6px;
+}
+

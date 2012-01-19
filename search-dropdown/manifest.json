@@ -1,0 +1,22 @@
+{
+	"BundleType": "Application",
+	"UserInstallable": false,
+	"PlaybackOwner": false,
+	"RequiredPermissions": [
+		"https://fbcdn-profile-*.akamaihd.net",
+		"http://*.fbcdn.net"
+	],
+	"ApiPermissions" : {
+		"core" : ["private"],
+		"social" : ["private"],
+		"desktop" : ["private"],
+		"playlist" : ["private"]
+	},
+	"SupportedLanguages": [
+		"en",
+		"fr",
+		"es",
+		"de",
+		"nl"
+	]
+}

@@ -1,0 +1,27 @@
+{
+	"BundleType": "Application",
+	"RequiredPermissions": [
+		"https://*",
+		"http://*"
+	],
+	"ApiPermissions" : {
+		"core" : ["private"],
+		"social" : ["private"],
+		"whatsnew" : ["private"]
+	},
+	"AppName": {
+		"en": "What's New",
+		"fr": "Nouveautés",
+		"es": "Novedades",
+		"de": "Neuheiten",
+		"nl": "Nieuw"
+	},
+	"SupportedLanguages": [
+		"en",
+		"fr",
+		"es",
+		"de",
+		"nl"
+	],
+	"UserInstallable": false
+}

@@ -1,0 +1,8 @@
+{
+	"BundleType": "Application",
+	"AppName": {
+		"en": "HTML5 Test"
+	},
+	"SupportedLanguages": ["en"],
+	"UserInstallable": false
+}

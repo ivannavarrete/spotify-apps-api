@@ -1,0 +1,127 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="sp://import/css/eve.css">
+		<link rel="stylesheet" href="/assets/css/style.css">
+		<script>
+			sp = getSpotifyApi(1);
+			var appMarket = sp.require('assets/js/script');
+		</script>
+	</head>
+	<body>
+		<header>
+			<div id="offer-1" data-appid="spotify" class="in-house banner-images focus"></div>
+			<div id="offer-2" data-appid="rollingstone" class="banner-images"></div>
+			<div id="offer-3" data-appid="lastfm" class="banner-images"></div>
+			<div id="offer-4" data-appid="songkickconcerts" class="banner-images"></div>
+			<div id="offer-5" data-appid="tunewiki" class="banner-images"></div>
+			<div id="previousimage" class="pagination"></div>
+			<div id="nextimage" class="pagination"></div>
+		</header>
+		<nav>
+			<ul>
+				<li id="lastfm">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Last.fm</span></h3>
+						<p>Personalised recommendations based on the music you play.</p>
+					</div>
+				</li><li id="songkickconcerts">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Songkick</span></h3>
+						<p>Track your favorite artists so you never miss them live.</p>
+					</div>
+				</li><li id="guardian">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>The Guardian</span></h3>
+						<p>Latest reviews from our critics.</p>
+					</div>
+				</li><li id="rollingstone">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Rolling Stone Recommends</span></h3>
+						<p>Hear the best albums, songs and playlists, by RS editors.</p>
+					</div>
+				</li><li id="tunewiki">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>TuneWiki</span></h3>
+						<p>Get synced lyrics and sing along to your favorite songs!</p>
+					</div>
+				</li><li id="pitchfork">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Pitchfork</span></h3>
+						<p>The Essential Guide to Independent Music & Beyond</p>
+					</div>
+				</li><li id="soundrop">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Soundrop</span></h3>
+						<p>Discover, share and listen to music with friends.</p>
+					</div>
+				</li><li id="fuse">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Fuse</span></h3>
+						<p>When musicians make news, Fuse suggests the soundtrack.</p>
+					</div>
+				</li><li id="wearehunted">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>We Are Hunted</span></h3>
+						<p>Discover the hottest new music in the world right now.</p>
+					</div>
+				</li><li id="tunigo" class="market-specific">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Tunigo</span></h3>
+						<p>Ett enkelt och underhållande sätt att upptäcka ny musik.</p>
+					</div>
+				</li><li id="billboard">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Billboard Top Charts</span></h3>
+						<p>Billboard Top Charts highlights songs from the popular weekly charts.</p>
+					</div>
+				</li><li id="moodagent">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Moodagent</span></h3>
+						<p>Instant playlists to match your mood.</p>
+					</div>
+				</li><li id="dagbladet" class="market-specific">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Dagbladet Musikk</span></h3>
+						<p>Få playlister og anmeldelser fra nordens største musikmedie.</p>
+					</div>
+				</li><li id="top10">
+					<button class="small-button primary">Add</button>
+					<img alt="Logo" src="assets/img/icon-overlay.png">
+					<div class="meta">
+						<h3><span>Top10</span></h3>
+						<p>Create & share Top10 playlists of the music you love!</p>
+					</div>
+				</li>
+			</ul>
+		</nav>
+		<script>
+			appMarket.init();
+		</script>
+	</body>
+</html>

@@ -1,0 +1,52 @@
+{
+	"BundleType": "Application",
+	"RequiredPermissions": [
+		"https://fbcdn-profile-*.akamaihd.net",
+		"http://*.fbcdn.net"
+	],
+	"ApiPermissions" : {
+		"core" : ["private"],
+		"social" : ["private"],
+		"playlist" : ["private"]
+	},
+	"AppIcon": {
+		"36x18": "people.png"
+	},
+	"AppName": {
+		"de": "Freunde",
+		"en": "People",
+		"es": "Amigos",
+		"fr": "Contacts",
+		"nl": "Vrienden"
+	},
+	"DefaultTabs": [
+		{
+			"arguments": "everyone",
+			"title": {
+				"de": "Alle Freunde",
+				"en": "Everyone",
+				"es": "Todos",
+				"fr": "Tout le monde",
+				"nl": "Iedereen"
+			}
+		},
+		{
+			"arguments": "spotify",
+			"title": {
+				"de": "Auf Spotify",
+				"en": "On Spotify",
+				"es": "En Spotify",
+				"fr": "Sur Spotify",
+				"nl": "Op Spotify"
+			}
+		}
+	],
+	"SupportedLanguages": [
+		"de",
+		"en",
+		"es",
+		"fr",
+		"nl"
+	],
+	"UserInstallable": false
+}

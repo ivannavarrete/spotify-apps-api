@@ -1,0 +1,318 @@
+html{
+	background: #ecebe8;
+	overflow:auto;
+}
+body{
+	background: #ecebe8;
+	padding: 40px 10px;
+	min-width: 342px;
+}
+h3{
+	margin: 0;
+}
+	h3 span {
+		white-space:nowrap;
+		overflow:hidden;
+		text-overflow:ellipsis;
+		font: 14px "Lucida Grande", "Tahoma", "Arial", sans-serif;
+		color: #424243;
+		font-weight: 600;
+	}
+p {
+	font: 11px "Lucida Grande", "Tahoma", "Arial", sans-serif;
+	color: #424243;
+	margin: 6px 0 0 0;
+}
+
+/*Css for banner */
+header {
+	margin: 0 auto 40px auto;
+	max-width: 800px;
+	min-width: 342px;
+	height: 296px;
+	overflow: hidden;
+	position: relative;
+}
+	header .banner-images {
+		opacity:0;
+		-webkit-transition: opacity 0.5s ease-in-out;
+		position: absolute;
+		left: 0;
+		top: 0;
+		-webkit-transition-delay: 0s;
+		z-index: 1;
+		cursor: pointer;
+	}
+		header .banner-images.in-house {
+			cursor: default;
+		}
+	header .banner-images.focus {
+		opacity:1;
+		z-index: 10;
+	}
+	#previousimage {
+		left: 25px;
+	}
+	#nextimage{
+		-webkit-transform: scaleX(-1);
+		right: 25px;
+	}
+	.pagination {
+		top: 50%;
+		position: absolute;
+		width: 49px;
+		margin-top: -25px;
+		height: 49px;
+		background: url("../img/top_banner_pagination.png") 59px 0 no-repeat;
+		z-index: 15;
+	}
+		header:hover #previousimage, header:hover #nextimage { background-position: -0px 0;}
+		header #previousimage:hover, header #nextimage:hover { background-position: -59px 0;}
+		header #previousimage:active, header #nextimage:active { background-position: -118px 0;}
+
+nav {
+	background: #f4f3f1;
+	border: 1px solid #cac9c6;
+	border-radius: 5px;
+	margin: 0 auto;
+	max-width: 766px;
+	min-width: 300px;
+	overflow: hidden;
+	padding: 28px 16px 0;
+}
+	nav li {
+		width: 33.33333%;
+	}
+	/* Queries for truncating text since theres a position absolute solution for hover states, sorry (quick fix, will solve) :/ */
+	@media (max-width: 825px) {
+		nav li {
+			width: 50%;
+		}
+		nav li .meta h3 {
+			max-width: 230px;
+		}
+	}
+	@media (max-width: 785px) {
+		nav li .meta h3 {
+			max-width: 200px;
+		}
+	}
+	@media (max-width: 750px) {
+		nav li .meta h3 {
+			max-width: 180px;
+		}
+	}
+	@media (max-width: 700px) {
+		nav li .meta h3 {
+			max-width: 155px;
+		}
+	}
+	@media (max-width: 650px) {
+		nav li .meta h3 {
+			max-width: 130px;
+		}
+	}
+	@media (max-width: 600px) {
+		nav li .meta h3 {
+			max-width: 105px;
+		}
+	}
+	@media (max-width: 550px) {
+		nav li {
+			width: 100%;
+		}
+		nav li .meta h3 {
+			max-width: 325px;
+		}
+	}
+	@media (max-width: 400px) {
+		nav li {
+			width: 100%;
+		}
+		nav li .meta h3 {
+			max-width: 170px;
+		}
+	}
+	nav ul{
+		list-style:none;
+		margin:0;
+		padding:0;
+	}
+	nav li {
+		display: inline-block;
+		vertical-align: top;
+		overflow: hidden;
+		margin: 0 auto;
+		margin-bottom: 29px;
+	}
+		nav li.market-specific {
+			display: none;
+		}
+		nav li h3 {
+			max-width: 115px;
+			white-space:nowrap;
+			overflow:hidden;
+			text-overflow:ellipsis;
+		}
+	li div:hover :not(p) {
+		text-decoration: underline;
+	}
+	li img:hover + .meta h3 {
+		text-decoration: underline;
+	}
+	nav li *:not(.small-button):not(h3){
+		cursor: pointer;
+	}
+	
+	.meta {
+		margin-top: 23px;
+		position: relative;
+	}
+		.meta h3 {
+			padding-bottom:8px;
+			position: absolute;
+			top:-22px;
+			left: 73px;
+		}
+		.meta p {
+			margin: 0 20px 0 0px;
+			overflow: hidden;
+		}
+	nav img {
+		float: left;
+		width: 64px;
+		height: 64px;
+		margin-right: 9px;
+		background-size: 100%;
+		-webkit-mask-box-image: url("../img/icon-mask.png");
+	}
+
+/*Images for  Carousel*/
+.banner-images {
+	width: 100%;
+	height: 296px;
+	border-radius: 5px;
+	background-repeat: no-repeat;
+}
+#offer-1 {
+	background-image: url('../img/banners/spotify.jpg');
+}
+#offer-3 {
+	background-image: url('../img/banners/lastfm.jpg');
+}
+#offer-2 {
+	background-image: url('../img/banners/rollingstone.jpg');
+}
+#offer-4 {
+	background-image: url('../img/banners/songkickconcerts.jpg');
+}
+#offer-5 {
+	background-image: url('../img/banners/tunewiki.png');
+}
+
+/*Images for each App*/
+.placeholder img {
+	background-image: url("../img/logos/placeholder.png");
+}
+#pitchfork img {
+	background-image: url("../img/logos/pitchfork.png");
+}
+#rollingstone img {
+	background-image: url("../img/logos/rollingstone.png");
+}
+#lastfm img {
+	background-image: url("../img/logos/lastfm.png");
+}
+#tunewiki img {
+	background-image: url("../img/logos/tunewiki.png");
+}
+#guardian img {
+	background-image: url("../img/logos/guardian.png");
+}
+#songkickconcerts img {
+	background-image: url("../img/logos/songkickconcerts.png");
+}
+#billboard img {
+	background-image: url("../img/logos/billboard.png");
+}
+#nrk img {
+	background-image: url("../img/logos/nrk.png");
+}
+#wearehunted img {
+	background-image: url("../img/logos/wearehunted.png");
+}
+#soundrop img {
+	background-image: url("../img/logos/soundrop.png");
+}
+#fuse img {
+	background-image: url("../img/logos/fuse.png");
+}
+#top10 img {
+	background-image: url("../img/logos/top10.png");
+}
+#moodagent img {
+	background-image: url("../img/logos/moodagent.png");
+}
+#sharemyplaylists img {
+	background-image: url("../img/logos/sharemyplaylists.png");
+}
+#dagbladet img {
+	background-image: url("../img/logos/dagbladet.png");
+}
+#gaffa img {
+	background-image: url("../img/logos/gaffa.png");
+}
+#tunigo img {
+	background-image: url("../img/logos/tunigo.png");
+}
+/*Css from core.css we use eve.css otherwise our buttons are smaller then the core.css*/
+.small-button {
+	background: initial;
+	border: initial;
+	-webkit-border-image: url("../../img/button.png") 0 5 51 5;
+	border-width: 0 5px;
+	box-sizing: border-box;
+	color: #373737;
+	text-shadow: -1px -1px 1px #125287;
+	cursor: default;
+	display: inline-block;
+	font-size: 10px;
+	line-height: 19px;
+	margin: 0;
+	width: 45px;
+	height: 19px;
+	overflow: hidden;
+	padding: 0px 0px;
+	text-decoration: none;
+	white-space: nowrap;
+	position: relative;
+	float:right;
+	right: 20px;
+	text-transform: uppercase;
+	z-index: 10;
+}
+
+	.small-button:active {
+		-webkit-border-image: url("../img/button.png") 19 5 32 5;
+	}
+
+	.small-button:disabled,
+	.small-button.primary:disabled {
+		-webkit-border-image: url("../img/button.png") 38 5 16 5;
+		color: #656565;
+		text-shadow: 1px 1px 1px #f5f5f5;
+		font-size: 9px;
+	}
+
+	.small-button.primary {
+		-webkit-border-image: url("../img/button.png") 0 5 51 5;
+		color: #FFF;
+	}
+
+	.small-button.primary:active {
+		-webkit-border-image: url("../img/button.png") 19 5 32 5;
+	}
+
+	.underline{
+		text-decoration: underline;
+	}

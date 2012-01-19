@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="people.css">
+	</head>
+
+	<body onload="sp = getSpotifyApi(1); sp.require('people').init('peopleGrid', 'filter', 'clear');">
+          <div id="people-header">
+            <div id="filter-container" class="filter-bar"> <span id="filter-bar-text">Filter</span>
+              <div id="field-container">
+                <span id="no-matches">No matches</span>
+                <span><input id="filter" class="filter-field" type="text"/></span></span><span id="clear"></span>
+              </div>
+            </div>
+          </div>
+          <div id="peopleGrid"></div>
+	</body>
+</html>

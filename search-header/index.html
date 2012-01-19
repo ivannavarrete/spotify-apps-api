@@ -1,0 +1,17 @@
+<!doctype Html>
+<html lang="en" id="search_header">
+<head>
+	<meta charset="utf-8">
+	<title>Search Results</title>
+	<link rel="stylesheet" href="search_header.css">
+</head>
+
+<body>
+<div id="wrapper"></div>
+<script>
+    sp = getSpotifyApi(1);
+var search_header = sp.require('search_header');
+search_header.init();
+</script>
+</body>
+</html>

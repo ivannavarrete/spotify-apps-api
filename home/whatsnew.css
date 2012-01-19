@@ -1,0 +1,997 @@
+@import url("sp://import/css/api.css");
+@import url("sp://import/css/eve.css");
+
+body {
+	min-height: 100%;
+	padding: 10px 0 20px;
+	box-sizing: border-box;
+}
+#wrapper {
+	position: relative;
+	z-index: 2;
+	max-width: 800px;
+	min-height: 100%;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+#offline {
+	position: absolute;
+	top: 50%;
+	width: 100%;
+	margin-top: -5%;
+	padding: 0 20px;
+	box-sizing: border-box;
+	color: #767574;
+	font-size: 22px;
+	font-weight: bold;
+	line-height: 1.5;
+	text-align: center;
+	text-shadow: #f9f9f8 0 1px 1px;
+}
+
+section {
+	position: relative;
+	overflow: hidden;
+	margin: 0 0 40px;
+}
+
+#NewAlbums {
+	margin-top: 40px;
+}
+
+.has-ad-bg #NewAlbums {
+	margin-top: 0
+}
+
+section section {
+	margin-bottom: 0;
+}
+
+.loading {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+
+
+/**
+ * Coverflow
+ */
+.sp-coverflow {
+	position: relative;
+	height: 283px;
+}
+	.sp-coverflow li {
+		position: absolute;
+		width: 280px;
+		height: 280px;
+		background: #ccc;
+		background-size: cover;
+		box-shadow: rgba(0, 0, 0,.4) 0 1px 1px;
+		border-radius: 0;
+		z-index: 0;
+		-webkit-transform: scale(.4);
+		-webkit-transition-property: -webkit-transform left "margin-left";
+		-webkit-transition-duration: .3s;
+		-webkit-transition-timing-function: ease;
+	}
+
+	.sp-coverflow li .sp-player-image  {
+		-webkit-transition-property: opacity;
+		-webkit-transition-duration: .3s;
+		-webkit-transition-timing-function: ease;
+	}
+
+	.sp-coverflow li .sp-player .sp-image {
+		cursor: default;
+		border-radius: 0;
+		box-shadow: none;
+	}
+
+	.sp-coverflow li[data-offset="0"] {
+		-webkit-transform: scale(1);
+		left: 50%;
+		margin-left: -140px;
+		z-index: 3;
+	}
+	.sp-coverflow li[data-offset="0"] .sp-player-image,
+	.sp-coverflow li[data-offset="1"] .sp-player-image:hover,
+	.sp-coverflow li[data-offset="-1"] .sp-player-image:hover,
+	.sp-coverflow li[data-offset="2"] .sp-player-image:hover,
+	.sp-coverflow li[data-offset="-2"] .sp-player-image:hover {
+		opacity: 1;
+	}
+
+	.sp-coverflow li[data-offset="0"] .sp-player .sp-image {
+		cursor: pointer;
+	}
+
+	.sp-coverflow li[data-offset="1"],
+	.sp-coverflow li[data-offset="-1"] {
+		-webkit-transform: scale(.80);
+		z-index: 2;
+	}
+	.sp-coverflow li[data-offset="1"] .sp-player-image,
+	.sp-coverflow li[data-offset="-1"] .sp-player-image {
+		opacity: .8;
+	}
+
+	.sp-coverflow li[data-offset="2"],
+	.sp-coverflow li[data-offset="-2"] {
+		-webkit-transform: scale(.64);
+		z-index: 1;
+	}
+	.sp-coverflow li[data-offset="2"] .sp-player-image,
+	.sp-coverflow li[data-offset="-2"] .sp-player-image {
+		opacity: .6;
+	}
+
+	.sp-coverflow li[data-offset="-2"] {
+		left: 0%;
+		margin-left: -50px;
+	}
+	.sp-coverflow li[data-offset="-1"] {
+		left: 20%;
+		margin-left: -108px;
+	}
+	.sp-coverflow li[data-offset="1"] {
+		left: 81%;
+		margin-left: -180px;
+	}
+	.sp-coverflow li[data-offset="2"] {
+		left: 100%;
+		margin-left: -230px;
+	}
+	.sp-coverflow .badge {
+		-webkit-transition: opacity .3s;
+		background-image: -webkit-linear-gradient(top, #d5d5d5, #ededed);
+		/*border: 1px solid rgba(0, 0, 0, .4);*/
+		border-radius: 3px;
+		box-shadow: inset 0px 1px 0px hsla(0, 0%, 100%, 0.3), 0px 1px 0px hsla(0, 0%, 13%, .2), 0px 0px 0px 1px rgba(0,0,0,0.4);
+		box-sizing: border-box;
+		color: #7a7a7a;
+		font-size: 9px;
+		opacity: 0;
+		padding: 0px 4px;
+		pointer-events: none;
+		position: absolute;
+		right: 10px;
+		text-transform: uppercase;
+		top: 10px;
+	}
+	.sp-coverflow li[data-offset="0"] .badge {
+		opacity: 1;
+	}
+	.sp-coverflow .metadata {
+		-webkit-transition: opacity .3s;
+		background: rgba(255, 255, 255, .85);
+		bottom: 0px;
+		border-radius: 0;
+		box-sizing: border-box;
+		left: 0px;
+		opacity: 0;
+		padding: 16px 20px 20px;
+		pointer-events: none;
+		position: absolute;
+		width: 100%;
+	}
+	.sp-coverflow li[data-offset="0"] .metadata {
+		pointer-events: auto;
+		opacity: 1;
+	}
+	.sp-coverflow .metadata a {
+		box-sizing: border-box;
+		display: inline-block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		width: 100%;
+		-webkit-transition: padding-right 100ms;
+	}
+	.sp-coverflow .metadata .album {
+		color: rgba(0, 0, 0, .7);
+		font-size: 17px;
+		font-weight: bold;
+		line-height: 24px;
+	}
+	.sp-coverflow .metadata .artist {
+		color: rgba(50, 50, 50, .7);
+	}
+	.sp-coverflow .sp-player {
+		border-radius: 3px;
+		height: 280px;
+		width: 280px;
+	}
+	.sp-coverflow .sp-player:hover .metadata a,
+	.sp-coverflow .sp-player:not(.sp-player-paused) .metadata a {
+		padding-right: 45px;
+	}
+	.sp-coverflow .sp-player-image {
+		box-shadow: none;
+		padding: 0px;
+	}
+	.sp-coverflow .sp-player-button {
+		margin-top: -22px;
+		right: 20px;
+		top: 50%;
+	}
+
+
+
+/**
+ * Toplists
+ */
+
+.toplist {}
+	.toplist table {
+		width: 100%;
+		padding: 0;
+		overflow: hidden;
+	}
+	.toplist.playlistsTable table {
+		border-spacing: 0;
+		border-collapse: collapse;
+		border-radius: 5px;
+	}
+	.toplist th {
+		font-size: 10px;
+		font-weight: normal;
+		text-align: left;
+		height: 19px;
+		vertical-align: middle;
+		padding: 0 5px;
+		-webkit-box-shadow: 1px 1px 0px #fff inset;
+		background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(223,222,218)), color-stop(1, rgb(241,240,238)));
+		border-right: 1px solid #c0c0c0;
+	}
+	.toplist th:first-child {
+		-webkit-box-shadow: 0px 1px 0px #fff inset;
+		padding: 0;
+	}
+	.toplist th:last-child {
+		border-right: none;
+	}
+	.toplist td {
+		height: 44px;
+		padding: 0;
+		background: #f2f2f2;
+		vertical-align: middle:;
+	}
+	toplist td:first-child {
+		padding-left: 7px;
+	}
+	.toplist tr:nth-child(odd) td {
+		background: #ffffff;
+	}
+
+	/*
+	tracksTable specific
+	*/
+
+	.toplist.tracksTable .window {
+		border: 1px solid #c9c9c9;
+		-webkit-border-bottom-left-radius: 2px;
+		-webkit-border-bottom-right-radius: 2px;
+		-webkit-box-shadow: 0px 1px 0 #dddcd9;
+		border-bottom-color: 1px solid #b6b5b2;
+	}
+
+	.toplist.tracksTable .heading {
+		border: 1px solid #d2d1ce;
+		border-spacing: 0;
+		border-color-top: #e0dfdc;
+		border-bottom: 0;
+	}
+
+
+	/**
+	 * List (move to List.css)
+	 */
+
+	.toplist .headingStarred {
+		width: 26px;
+	}
+
+	.sp-list div a .sp-track-field-star {
+		width: 26px;
+
+	}
+
+	.toplist .headingTitle {
+		width: 140px;
+	}
+
+	.sp-list a .sp-track-field-name {
+		width: 50%;
+	}
+
+	.toplist .headingArtist {
+		width: 102px;
+	}
+
+	.sp-track-field-artist {
+		width: 40%;
+	}
+
+	.sp-list .sp-item > span {
+
+	}
+
+	.sp-list.sp-light > div {
+		background-size: 50px 50px;
+		background-image: -webkit-linear-gradient(#ffffff, #ffffff 50%, #f2f2f2 50%, #f2f2f2);
+		min-height: 200px;
+	}
+
+	.sp-list.sp-light > div,
+	.sp-list.sp-light > div > div {
+		line-height: 25px;
+	}
+
+	.sp-list.sp-light .sp-icon-star {
+		background-position-y: 4px;
+	}
+
+	.sp-list.sp-light .sp-track-playing .sp-icon-star:not(:hover) {
+		background-position-y: 6px;
+	}
+
+	/*
+	tracksTable specific
+	*/
+
+	.toplist.tracksTable {
+		padding: 0 0 1px 0;
+	}
+
+	.toplist.tracksTable .tableWrapper {
+		border: 1px solid #c9c9c9;
+		-webkit-border-bottom-left-radius: 2px;
+		-webkit-border-bottom-right-radius: 2px;
+		-webkit-box-shadow: 0px 1px 0 #dddcd9;
+		border-bottom-color: 1px solid #b6b5b2;
+	}
+
+	.toplist.tracksTable h2 {
+		margin: 5px 0 15px 0;
+	}
+
+	.toplist.tracksTable table {
+		border-spacing: 0;
+	}
+
+	.toplist.tracksTable .heading {
+		border: 1px solid #d2d1ce;
+		border-spacing: 0;
+		border-color-top: #e0dfdc;
+		border-bottom: 0;
+	}
+
+	.toplist.tracksTable td {
+		height: 25px;
+		padding: 0 5px;
+		vertical-align: middle;
+	}
+
+
+	.toplist.tracksTable td.star {
+		background-image: url('img/star.png');
+		background-repeat: no-repeat;
+		background-position: 3px 4px;
+		width: 20px;
+		padding: 0;
+	}
+
+	.toplist.tracksTable td.star.starred {
+		background-position: 3px -21px;
+	}
+
+	/*
+	playlistsTable specific
+	*/
+	.playlistsTable .window {
+		z-index: 10;
+		overflow: hidden;
+		border: 1px solid #cac9c6;
+		background: #fff;
+		border-radius: 5px;
+		-webkit-box-shadow: 0px 1px 0 #dddcd9;
+		border-bottom-color: 1px solid #b6b5b2;
+	}
+
+	.playlistsTable .window ul {
+		background: #fff;
+		border-radius: 5px;
+		overflow: hidden;
+		background-clip: padding-box;
+	}
+
+	/*
+	This is neccesary because the ul inside the .window must
+	have position:absolute; for scrolling and that disables
+	proper border clipping when using border-radius, so the
+	color bleeds out at the edges. Please see this URL for info
+	http://fransdejonge.com/test/2010/border-radius/
+	/awkalle
+	*/
+
+	.toplist .border {
+		position: absolute;
+		top: 32px;
+		bottom: 1px;
+		right: 0;
+		z-index: 10;
+		border: 1px solid #cac9c6;
+		border-radius: 5px;
+		left: 0;
+		background: transparent;
+		pointer-events: none;
+	}
+
+	.toplist .window li {
+		height: 44px;
+		padding: 0;
+		background: #f2f2f2;
+		display: -webkit-box;
+		-webkit-box-orient: horizontal;
+		background-clip: padding-box;
+	}
+	.toplist .window li:nth-child(odd)  {
+		background: #ffffff;
+		background-clip: padding-box;
+	}
+
+	.playlistsTable .pager {
+		padding: 0 0 1px 0;
+	}
+
+
+	.playlistsTable .window .nameColumn {
+		-webkit-box-flex: 1;
+		padding: 3px 5px 0 4px;
+		font-size: 11px;
+	}
+
+	.playlistsTable .name, .playlistsTable .creator {
+		overflow: hidden;
+		display: inline-block;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		color: #767676;
+	}
+	.playlistsTable .name {
+		font-size: 12px;
+		color: #444;
+		color: #454545;
+		font-weight: bold;
+	}
+	.playlistsTable .name {
+		display: block;
+	}
+	.toplist .creator {
+		color: #767676;
+	}
+	.toplist .friendsColumn {
+		padding: 6px 5px 0 5px;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	.toplist .image {
+		width: 28px;
+		height: 28px;
+		display: block;
+		margin: 0 1px 0 0;
+		float: right;
+	}
+
+/**
+ * Friends list
+ */
+
+#NewFriends {
+	position: relative;
+}
+	#NewFriends .window {
+		overflow: hidden;
+		font-weight: bold;
+	}
+
+	.pager h2 {
+		margin: 5px 0 15px 0;
+	}
+	.paging li.prev {
+		padding: 0 3px 0 0;
+	}
+	.paging li.next {
+		padding: 0 0 0 3px;
+	}
+
+	#NewFriends .window {
+		background: #fff;
+		overflow: hidden;
+		-webkit-border-radius: 5px;
+		border: 1px solid #d2d1ce;
+		-webkit-box-shadow: 0px 1px 0 #dddcd9;
+		border-bottom: 1px solid #b6b5b2;
+	}
+
+	#NewFriends .window ul {
+		height: 90px;
+		overflow: hidden;
+	}
+
+	#NewFriends .window li {
+		float: left;
+		display: -webkit-box;
+		box-sizing: border-box;
+		height: 50px;
+		margin: 20px 0 0;
+		padding: 0 10px 0 20px;
+	}
+
+	#NewFriends .window .image {
+		display: block;
+		width: 48px;
+		height: 48px;
+		margin: 0 10px 0 0;
+		border: 0;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), inset 0 0 1px rgba(0,0,0,0.4), 0 1px 0px rgba(255,255,255,0.5);
+	}
+
+	#NewFriends .window .text {
+		display: block;
+		width: 0;
+		padding: 7px 0 0;
+		-webkit-box-flex: 1
+	}
+
+	#NewFriends .window .user {
+		overflow: hidden;
+		display: block;
+		font-size: 11px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	#NewFriends .window .presence {
+		font-size: 10px;
+		font-weight: normal;
+	}
+
+	#NewFriends .window .presence span {
+		overflow: hidden;
+		display: block;
+		height: 20px;
+		line-height: 20px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	#NewFriends .window .presence .track,
+	#NewFriends .window .presence .playlist,
+	#NewFriends .window .presence .starred {
+		background-repeat: no-repeat;
+		background-position: -3px 0;
+		padding: 0 0 0 16px;
+	}
+	#NewFriends .window .presence .track {
+		background-image: url("sp://import/img/tracks.png");
+	}
+	#NewFriends .window .presence .playlist {
+		background-image: url("sp://import/img/playlist.png");
+	}
+	#NewFriends .window .presence .starred {
+		background-image: url("sp://import/img/starred.png");
+	}
+	#NewFriends .window .presence a {
+		display: inline;
+	}
+
+
+/**
+ * Ads stuff
+ */
+.has-ad-bg:not(.has-ad-top) #wrapper {
+	margin-top: 245px;
+}
+.ad-bg {
+	background: rgba(0, 0, 0, 0.0) no-repeat center top;
+	height: 545px;
+	left: 0;
+	min-width: 501px;
+	position: absolute;
+	top: 0;
+	width: 100%;
+	z-index: 0;
+}
+.ad-bg[href^="http:"]::after,.topWrapper a[href^="http:"]::after {
+	margin: 0;
+	content: '';
+}
+.topWrapper {
+	overflow: hidden;
+	position: relative;
+	z-index: 2;
+	height: 235px;
+	margin: 0 0 10px;
+	background: rgba(255, 255, 255, .5);
+}
+
+.mpuWrapper {
+	overflow: hidden;
+	width: 300px !important;
+	height: 250px !important;
+	margin-top: 8px;
+}
+	.topWrapper a, .mpuWrapper a {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.topWrapper iframe, .mpuWrapper iframe {
+		overflow: hidden;
+		width: 100%;
+		height: 100%;;
+		border: 0;
+	}
+
+.topWrapper .adWrapper {
+	left: 50%;
+	margin-left: -400px;
+	position: absolute;
+	top: 0;
+	width: 800px;
+}
+
+
+/**
+ * New releases
+ */
+#NewReleases {
+	position: relative;
+	background: rgba(255, 0, 0);
+}
+	#NewReleases .window ul {
+		overflow: hidden;
+		width: 812px;
+		height: 410px;
+	}
+	#NewReleases .window li {
+		float: left;
+		width: 20%;
+		height: 190px;
+		margin: 0 0 16px 0;
+	}
+	#NewReleases .name, #NewReleases .artist {
+		overflow: hidden;
+		display: block;
+		max-width: 148px;
+		margin: 0 auto;
+		font-weight: bold;
+		text-align: center;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	#NewReleases .sp-player {
+		width: 148px;
+		height: 148px;
+		margin: 0 auto 5px auto;
+		display: block;
+	}
+	#NewReleases span {
+		overflow: hidden;
+		display: block;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	#NewReleases .artist {
+		color: #a8a8a8;
+	}
+
+
+
+/**
+ * Toplists
+ */
+.toplists {
+	margin-top: 0;
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-pack: start;
+}
+.toplists .playlists {
+	margin-right: 20px;
+	-webkit-box-flex:1;
+}
+.toplists .tracks {
+	width: 300px;
+}
+
+.toplist.CountryPlaylists {
+	margin-right: 0;
+}
+
+.toplist.CountryTracks {
+	width: 100%;
+}
+
+.toplist.CountryTracks .headingTitle {
+	width: 54%;
+}
+
+.toplist.CountryTracks .headingArtist {
+	width: auto;
+}
+
+
+.toplist.CountryTracks .headingStarred {
+	width: 26px;
+}
+
+
+.toplists .tracks .name {
+	max-width: 125px;
+}
+.toplists .tracks .creator {
+	max-width: 100px;
+}
+.toplists section.fullwidth {
+	width: 100%;
+}
+
+
+
+/***
+Temporarily added this here, should really be changed in eve.css
+**/
+
+
+.pager .window ul,.pager .window table {
+	width: 100%;
+	height: 100%;
+	-webkit-transition: top .3s, left .3s;
+}
+/*
+.has-ad-bg #topToplists {
+	padding: 10px 20px;
+	background: #f1f0ee;
+	border-radius: 5px;
+	border: 1px solid rgba(0,0,0,0.7);
+}*/
+
+#underconstruction {
+	display: none;
+	position: fixed;
+	bottom: 0;
+	left: 50%;
+	z-index: 5;
+	width: 574px;
+	height: 51px;
+	margin: 0 0 0 -287px;
+	background: url(img/underconstruction.gif) center;
+}
+
+@media all and (min-width: 800px) {
+	#NewFriends .window li {
+		width: 25%;
+	}
+
+	#NewReleases .window ul {
+		width: 100%;
+	}
+
+	#NewReleases .window ul li {
+		width: 20%;
+	}
+}
+
+@media all and (min-width: 651px) and (max-width: 799px){
+	#NewFriends .window li {
+		width: 33.3%;
+	}
+	#NewReleases .window ul {
+		width: 100%;
+	}
+	#NewReleases .window ul li {
+		width: 25%;
+	}
+}
+
+@media all and (min-width: 501px) and (max-width: 650px){
+
+	#wrapper {
+		min-width: 470px;
+	}
+
+	#NewReleases .window ul {
+		width: 100%;
+	}
+	#NewReleases .window ul li  {
+		width: 33.3%;
+	}
+}
+
+@media all and (min-width: 1px) and (max-width: 650px){
+	.has-ad-bg #topToplists {
+		padding: 0;
+		background: transparent;
+		border-radius: 0;
+		border: 0;
+	}
+/*	.has-ad-bg #topToplists .playlists {
+		padding: 10px 20px;
+		background: #f1f0ee;
+		border-radius: 5px;
+		border: 1px solid rgba(0,0,0,0.7);
+		box-sizing: border-box;
+		min-width: 450px;
+	}
+
+	.has-ad-bg #topToplists .border {
+		top: 47px;
+		left: 20px;
+		right: 20px;
+		bottom: 11px;
+	}
+	.has-ad-bg #topToplists .playlists .paging {
+		top: 10px;
+		right: 20px;
+		-webkit-transition: none;
+	}
+*/
+	section section {
+		margin-bottom: 40px;
+	}
+	section section:last-child {
+		margin-bottom: 0;
+	}
+	#wrapper .toplists {
+		-webkit-box-orient: vertical;
+	}
+
+	#wrapper .toplists .playlists {
+		float: none;
+		margin-right: 0;
+		min-width: 450px;
+	}
+
+	#wrapper .toplists .tracks {
+		float: none;
+		width: auto;
+		min-width: 450px;
+	}
+
+	#wrapper .toplists .mpuWrapper {
+		margin: 0 auto;
+	}
+
+	#NewFriends .window li {
+		width: 50%;
+	}
+
+	.toplist .headingStarred {
+		width: 12px;
+	}
+
+	.sp-list div a .sp-track-field-star {
+		width: 26px;
+	}
+
+	.toplist .headingTitle {
+		width: 140px;
+	}
+
+	.sp-list a .sp-track-field-name {
+		width: 50%;
+	}
+
+	.toplist .headingArtist {
+		width: 112px;
+	}
+
+	.sp-track-field-artist {
+		width: 40%;
+	}
+
+
+}
+@media all and (min-width: 1px) and (max-width: 501px){
+	#wrapper {
+		width: 460px;
+	}
+
+	#NewReleases .window ul {
+		width: 460px;
+	}
+
+	#NewReleases .window ul li  {
+		width: 150px;
+		margin-right: 5px;
+	}
+
+
+	#NewReleases .window ul li:nth-child(3n+3)  {
+		margin-right: 0;
+	}
+
+}
+
+.sp-player-image {
+	background-image: url("sp://import/img/placeholders/128-album.png");
+	padding: 0;
+	-webkit-box-shadow: none;
+}
+	/* Default player (Medium)
+	 *
+	 * @usage: Player size 128x128 - applicable on 150x150
+	 */
+	.sp-player .sp-image {
+		border-radius: 3px;
+		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), inset 0 0 1px rgba(0,0,0,0.4), 0 1px 0px rgba(255,255,255,0.5);
+	}
+/*
+		-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), inset 0 0 1px rgba(0,0,0,0.4), 0 1px 0px rgba(255,255,255,0.5);
+
+*/
+
+
+#Banners {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+}
+
+#Banners.hidden {
+	display: none;
+}
+
+#Banners .banner {
+	max-width: 389px;
+	-webkit-box-flex: 1;
+	width: 50%;
+	overflow: hidden;
+	position: relative;
+}
+
+#Banners .banner a.image {
+	text-indent: -9999px;
+	height: 110px;
+	display: block;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.2), inset 0 0 1px rgba(0,0,0,0.4), 0 1px 0px rgba(255,255,255,0.5);
+}
+
+#Banners .banner button {
+	position: absolute;
+	display: block;
+	width: 16px;
+	height: 16px;
+	top: 0;
+	right: 0;
+	text-indent: -9999px;
+	overflow: hidden;
+	border: 0;
+	background: transparent url("./img/close-banner.png") no-repeat bottom left;
+	opacity: 0.6;
+}
+
+#Banners .banner button:hover {
+	opacity: 1;
+}
+
+#Banners .banner:first-child {
+	margin-right: 18px;
+}
+
+#Banners.single .banner,#Banners.single .banner:first-child {
+	margin: 0 auto;
+}
+
+#Banners #finder-push a {
+	background: transparent url("./img/app-push.jpg") no-repeat top left;
+}
+
+#Banners #radio-push a {
+	background: transparent url("./img/radio-push.png") no-repeat top left;
+}

@@ -1,0 +1,91 @@
+@import url("sp://import/css/api.css");
+@import url("sp://import/css/adam.css");
+
+#wrapper {
+	display: -webkit-box;
+	box-sizing: border-box;
+}
+.did_you_mean {
+	padding: 18px;
+}
+.did_you_mean p {
+	padding: 12px;
+	border: 1px solid transparent;
+	border-color: #1d1d1d #1f1f1f #202020;
+	border-radius: 4px;
+	background: #262626;
+	font-style: italic;
+}
+#wrapper section {
+	overflow: hidden;
+	width: 0;
+	padding: 0 18px 18px;
+	border-left: 1px solid rgba(255, 255, 255, .10);
+	border-right: 1px solid rgba(0, 0, 0, .10);
+	-webkit-box-flex: 1;
+}
+#wrapper:first-child section {
+	padding-top: 13px;
+}
+section:first-child {
+	border-left: 0;
+}
+section:last-child {
+	border-right: 0;
+}
+a {
+	color: #fff;
+}
+section h2 {
+	margin: 0 0 15px;
+}
+section .window {
+	overflow: hidden;
+	max-height: 210px;
+}
+section .window ul {
+	overflow: hidden;
+}
+section .window li {
+	display: -webkit-box;
+	margin: 0 0 10px;
+	font-size: 11px;
+}
+	section li a {
+		color: #d1d1d1;
+	}
+	section li .image {
+		display: block !important;
+		overflow: hidden;
+		width: 30px;
+		height: 30px;
+		margin: 0 10px 0 0;
+		border: 1px solid rgba(0, 0, 0, .64);
+		border-radius: 4px;
+		box-shadow: rgba(0, 0, 0, .5) 0px 1px 2px, inset rgba(255, 255, 255, .1) 0 1px 2px;
+	}
+	section.playlists li .image {
+		background: url(sp://import/img/placeholders/30-playlist.png);
+	}
+	section.artists li .image {
+		background: url(sp://import/img/placeholders/30-artist.png);
+	}
+	section.albums li .image {
+		background: url(sp://import/img/placeholders/30-album.png);
+	}
+	section li .text {
+		display: block;
+		-webkit-box-flex: 1;
+	}
+		section li .text a {
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		section li .name {
+			font-weight: bold;
+		}
+		section li .artist {
+			color: #7d7d7d;
+		}
