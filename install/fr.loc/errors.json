@@ -1,20 +1,20 @@
-{
+{ 
 	"metadataFailed":
 	{
-		"unknownError": "Sorry, I could not download this app. Please try again later.",
-		"clientOffline": "Please go online to launch this app.",
-		"connectionFailed": "Sorry, I could not download this app. Please try again later.",
-		"appNotFound": "Sorry, I could not find this app."
+		"unknownError": "Impossible de télécharger cette application. Merci de réessayer plus tard.",
+		"clientOffline": "Connectez-vous pour utiliser cette application.",
+		"connectionFailed": "Impossible de télécharger cette application. Merci de réessayer plus tard.",
+		"appNotFound": "Désolé, impossible de trouver cette application."
 	},
 	"downloadFailed":
 	{
-		"unknownError": "Sorry, I could not download this app. Please try again later.",
-		"clientOffline": "Please go online to launch this app.",
-		"connectionFailed": "Sorry, I could not download this app. Please try again later.",
-		"urlNotFound": "Sorry, I could not download this app. Please try again later."
+		"unknownError": "Impossible de télécharger cette application. Merci de réessayer plus tard.",
+		"clientOffline": "Connectez-vous pour utiliser cette application.",
+		"connectionFailed": "Impossible de télécharger cette application. Merci de réessayer plus tard.",
+		"urlNotFound": "Impossible de télécharger cette application. Merci de réessayer plus tard."
 	},
 	"installFailed":
 	{
-		"incorrectChecksum": "Sorry, I could not download this app. Please try again."
+		"incorrectChecksum": "Impossible de télécharger cette application. Merci de réessayer plus tard."
 	}
 }

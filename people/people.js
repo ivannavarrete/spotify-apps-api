@@ -12,6 +12,7 @@ var _ = partial(lang.getString, catalog, 'People');
 var storage = sp.require('sp://import/scripts/storage');
 var g = sp.require('sp://import/scripts/grid');
 var pf = sp.require('peopleFilter');
+var sharedPresence = sp.require("sp://import/scripts/presence");
 
 var peopleFilter;
 var social = sp.social;
@@ -28,7 +29,7 @@ var socialServiceStates = social.serviceStates;
 function tabUpdate(po) {
     var arg = sp.core.getArguments()[0];
     peopleFilter.reCache(arg);
-    init();
+	grid.rebuild();
 }
 
 function preInit(gridId, inputId, clearId)
@@ -48,14 +49,20 @@ function preInit(gridId, inputId, clearId)
 
 function init()
 {
-	cachedPresences = storage.getWithDefault('cachedPresences', {});
-
+	//cachedPresences = storage.getWithDefault('cachedPresences', {});
     gridContainer.innerHTML = '';
+
+	if (document.getElementById('nofriends') != null) {
+		document.body.removeChild(document.getElementById('nofriends'));
+	}
+
 	grid = new g.Grid('people', new PeopleDataSource(), gridContainer);
 	grid.node.classList.add('fill');
+	/*
 	if (1 === sp.core.getLoginMode()) {
 		setTimeout(partial(_subscribeToUsers, relations.allSpotifyUsers()), 100);
 	}
+	*/
 
 	grid.rebuild();
 
@@ -63,7 +70,7 @@ function init()
 	favorites.addEventListener('change', _favoritesUpdated);
 	relations.addEventListener('change', _relationsChanged);
 	sp.core.addEventListener('login', _isLoggedIn);
-	sp.core.addEventListener('hermes', _presenceUpdated);
+	//sp.core.addEventListener('hermes', _presenceUpdated);
 }
 
 function _isFacebookEnabled()
@@ -108,6 +115,7 @@ function _userHasNoFriends()
 	h1.textContent = _("sPeopleSpotifyIsMoreFun");
 	h2.textContent = _("sPeopleShareMusic");
 
+	article.id = "nofriends";
 	article.appendChild(placeholder);
 	article.appendChild(h1);
 	article.appendChild(h2);
@@ -149,13 +157,13 @@ function _relationsChanged()
 {
 	var newUsers = filter(_filterUsers, relations.allSpotifyUsers());
 
-	_subscribeToUsers(newUsers);
+	//_subscribeToUsers(newUsers);
 	_rebuildGrid();
 }
 
 function _isLoggedIn()
 {
-	_subscribeToUsers(relations.allSpotifyUsers());
+	//_subscribeToUsers(relations.allSpotifyUsers());
 	_rebuildGrid();
 }
 
@@ -223,7 +231,7 @@ function _makeUserNode(user)
 		node.id = user.canonicalUsername;
 
 	var link = document.createElement("a");
-	link.title = user.name;
+	link.title = user.name.decodeForText();
 	link.classList.add("userlink");
 	link.setAttribute("href", user.uri);
 
@@ -248,13 +256,14 @@ function _makeUserNode(user)
 	var labelLink = document.createElement("a");
 	labelLink.classList.add("userlink");
 	labelLink.setAttribute("href", user.uri);
-	labelLink.textContent = user.name;
+	labelLink.textContent = user.name.decodeForText();
 
 	var label = document.createElement("span");
 	label.classList.add("username");
 	label.appendChild(labelLink);
 	node.appendChild(label);
 
+	/*
 	var presence = document.createElement("span");
 	presence.classList.add("presence");
 	presence.textContent = "";
@@ -263,7 +272,12 @@ function _makeUserNode(user)
 	// Don't subscribe to the presence events right away, because those method
 	// calls might take some time to execute, and this method is invoked many
 	// times when scrolling in the window, and we don't want to make that slow.
-	setTimeout(function() { _observePresence(user) }, 100);
+	//TODO: delete old presence handling code
+	sharedPresence.observePresence(user, function(user, presenceString){
+		observedUsers[user] = true;
+		dom.queryOne('.presence', node).innerHTML = presenceString;
+	});
+	*/
 
 	return node;
 }
@@ -284,6 +298,7 @@ function _toggleFavoriteState(user)
 		favorites.add(uri);
 }
 
+/*
 function _updatePresenceNode(username, state)
 {
 	hermes.stringFromPresenceState(state, function(string)
@@ -350,7 +365,7 @@ function _presenceUpdated(event)
 		storage.set("cachedPresences", cachedPresences);
 	}
 }
-
+*/
 function _favoritesUpdated(event)
 {
 	var buttons = document.getElementsByClassName("favorite-button");

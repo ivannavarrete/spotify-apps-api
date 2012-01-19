@@ -861,7 +861,7 @@ var NewFriends = {
 			}
 
 			var newFriendsDS = new newFriendsDataSource(data);
-			newFriendsDS.subscribeToPresence();
+			//newFriendsDS.subscribeToPresence();
 
 			var pager = new p.Pager(newFriendsDS, {
 				perPage: perPage,
@@ -1686,9 +1686,11 @@ function newFriendsDataSource(data)
 			+'<span class="text"><a href="spotify:user:'+d.canonicalUsername+'" class="user">'+d.name+'</a>'
 			+'<span class="presence"></span></span>';
 
+		/*
 		presence.observePresence(d, function(user, presenceString){
 			dom.queryOne('.presence', li).innerHTML = presenceString;
 		});
+		*/
 
 		logger.logClick(dom.queryOne('a.image', li),'newFriends picture');
 		logger.logClick(dom.queryOne('a.user', li),'newFriends link');
@@ -1696,11 +1698,13 @@ function newFriendsDataSource(data)
 		return li;
 	};
 
+	/*
 	this.subscribeToPresence = function()
 	{
 		presence.subscribeToPresence(data);
 		return data;
 	};
+	*/
 }
 
 function newReleasesDataSource()

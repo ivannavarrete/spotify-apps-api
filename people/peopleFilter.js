@@ -1,16 +1,11 @@
-/**
- * PeopleFilter for filtering friends on the people view.
- * @author Jason LaCarrubba <jason@spotify.com>
- */
-
 "use strict";
 
 var sp = sp || getSpotifyApi(1);
 
 var dom = sp.require('sp://import/scripts/dom');
 
-var PeopleFilter = function(searchBoxId, clearId, displayCallback, userBase) {
-
+var PeopleFilter = function(searchBoxId, clearId, displayCallback, userBase)
+{
   var pf = {};
 
   // private vars
@@ -29,7 +24,7 @@ var PeopleFilter = function(searchBoxId, clearId, displayCallback, userBase) {
     var matches = [];
 
     matches = filter(function(user) {
-      return user.name.toLowerCase().indexOf(term) !== -1;
+      return user.name.toLowerCase().decodeForText().indexOf(term) !== -1;
     }, users);
 
     return matches;

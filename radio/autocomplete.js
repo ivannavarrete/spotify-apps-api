@@ -132,7 +132,6 @@ TokenInput.prototype.removeToken = function() {
 	var ti = this;
 	if (0 < ti.tokens.length) {
 		ti.tokens.pop().remove();
-        window.alert("click");
 	}
 	if (0 === ti.tokens.length) {
 		ti.enable();

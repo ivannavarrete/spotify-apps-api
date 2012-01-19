@@ -1,8 +1,17 @@
 /**
  * @module models
- * @property {Social}  social   See {@link Social}
  * @property {Library} library  See {@link Library}
  * @property {Player}  player   See {@link Player}
+ * @property {Application} application 	See {@link Application}
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ *
+ * var myAwesomePlaylist = new models.Playlist("My Awesome Playlist");
+ * myAwesomePlaylist.add(models.player.track);
+ * myAwesomePlaylist.add("spotify:track:6JEK0CvvjDjjMUBFoXShNZ");
+ *
  */
 
 "use strict";
@@ -21,23 +30,38 @@ exports.Playlist = Playlist;
 exports.Search   = Search;
 exports.Track    = Track;
 exports.User     = User;
+exports.Toplist  = Toplist;
 
 // Functions
-exports.search  = search;
+exports.readFile = readFile;
 
 // Properties
 exports.AVAILABILITY = null;
 exports.EVENT = null;
+exports.SEARCHTYPE = null;
+exports.LOCALSEARCHRESULTS = null;
+
+exports.TOPLISTTYPE = null;
+exports.TOPLISTREGION_EVERYWHERE = null;
+exports.TOPLISTUSER_CURRENT = null;
+exports.TOPLISTMATCHES = null;
 
 /** @typedef {(Array.<Track>)} */
 var Tracks;
 
+var _app     = null;
 var _session = null;
 var _player  = null;
 var _library = null;
 var _social  = null;
 
 Object.defineProperties(exports, {
+    application: {
+        get: function () {
+            if (!_app) _app = new Application();
+            return _app;
+        }
+    },
     library: {
         get: function() {
             if (!_library) _library = new Library();
@@ -101,18 +125,33 @@ var EVENT = exports.EVENT = {
     ITEMS_ADDED:   1 << 3,
     ITEMS_REMOVED: 1 << 4,
     ITEMS_MOVED:   1 << 5,
-    RENAME:        1 << 6
+    RENAME:        1 << 6,
+    LOAD_ERROR:    1 << 7,
+    ACTIVATE:      1 << 8,
+    DEACTIVATE:    1 << 9,
+    ARGUMENTSCHANGED: 1 << 10,
+    LINKSCHANGED:  1 << 11,
+    LOGIN:         1 << 12,
+    LOGOUT:        1 << 13,
+    STATECHANGED:  1 << 14
 };
 
 // Map to C++ event names.
 var _EVENT = {};
-_EVENT[EVENT.LOAD]          = "load";
-_EVENT[EVENT.UNLOAD]        = "unload";
-_EVENT[EVENT.CHANGE]        = "change";
-_EVENT[EVENT.ITEMS_ADDED]   = "itemsAdded";
-_EVENT[EVENT.ITEMS_REMOVED] = "itemsRemoved";
-_EVENT[EVENT.ITEMS_MOVED]   = "itemsMoved";
-_EVENT[EVENT.RENAME]        = "rename";
+_EVENT[EVENT.LOAD]              = "load";
+_EVENT[EVENT.UNLOAD]            = "unload";
+_EVENT[EVENT.CHANGE]            = "change";
+_EVENT[EVENT.ITEMS_ADDED]       = "itemsAdded";
+_EVENT[EVENT.ITEMS_REMOVED]     = "itemsRemoved";
+_EVENT[EVENT.ITEMS_MOVED]       = "itemsMoved";
+_EVENT[EVENT.RENAME]            = "rename";
+_EVENT[EVENT.ACTIVATE]          = "activate";
+_EVENT[EVENT.DEACTIVATE]        = "deactivate";
+_EVENT[EVENT.ARGUMENTSCHANGED]  = "argumentsChanged";
+_EVENT[EVENT.LINKSCHANGED]      = "linksChanged";
+_EVENT[EVENT.LOGIN]             = "login";
+_EVENT[EVENT.LOGOUT]            = "logout";
+_EVENT[EVENT.STATECHANGED]      = "loginModeChanged";
 
 // Interfaces
 
@@ -270,6 +309,115 @@ Observable.prototype.notify = function(event, data) {
 // Constructors
 
 /**
+ * An application object that handles your application's interaction with the rest of the Spotify client.
+ * Please note that you should *not* instantiate this class directly - instead, use the models.application property.
+ *
+ * @property {string} arguments   	The arguments that were used to start the application. The arguments are extracted from the URI used to activate the application, in the format spotify:app:name:arg1:val1:arg2:val2:...:argN:valN.
+ * @property {string} links 		The most recent set of URIs that were dropped onto your application.  
+ * @constructor
+ */
+function Application() {
+    this.observers = {};
+
+    sp.core.addEventListener("activate", sendEvent.bind(this));
+    sp.core.addEventListener("deactivate", sendEvent.bind(this));
+    sp.core.addEventListener("argumentsChanged", sendEvent.bind(this));
+    //sp.core.addEventListener("filterChanged", sendEvent.bind(this));
+    sp.core.addEventListener("linksChanged", sendEvent.bind(this));
+    sp.core.addEventListener("drop", sendEvent.bind(this));
+}
+
+/**
+ * Activates the application view, so that it is the focus of keyboard events. Call 
+ * this method only in response to user actions, such if user further input is required
+ * when dragging a track onto the application.
+ */
+Application.prototype.activate = function() {
+    sp.core.activate();
+}
+
+/**
+ * Shows the standard Spotify "Share" popup to allow the user to share the given
+ * URI with a variety of social networks.
+ *
+ * @param {element} anchorElement   The element to anchor the popup to. This should be the button or link the user clicked to open the share popup.
+ * @param {string} uri  The URI to share.
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ *
+ * models.application.showSharePopup(document.getElementById("header"), "spotify:track:6JEK0CvvjDjjMUBFoXShNZ");
+ *
+ */
+Application.prototype.showSharePopup = function(anchorElement, uri) {
+    
+    var rect = null;
+
+    if (anchorElement != null) {
+        rect = anchorElement.getClientRects()[0];
+    } else {
+        rect = document.body.getClientRects()[0];
+    }
+
+    var left = rect.left + (rect.width / 2);
+    var right = rect.top  + (rect.height / 2);
+
+    sp.social.showSharePopup(parseInt(left), parseInt(right), uri);
+}
+
+/**
+ * Hides the standard Spotify "Share" popup, if visible.
+ */
+Application.prototype.hideSharePopup = function() {
+    sp.social.hideSharePopup();
+}
+
+Object.defineProperties(Application.prototype, {
+    arguments: {
+        get: sp.core.getArguments
+    },
+    filter: {
+        get: sp.core.getFilter
+    },
+    links: {
+        get: sp.core.getLinks
+    }
+});
+
+/**
+ * Register an observer. The Application object fires the following events: <ul><li>EVENT.ACTIVATE: Fires when the application is activated.</li><li>EVENT.DEACTIVATE: Fires when the application is deactivated.</li><li>EVENTS.ARGUMENTSCHANGED: Called when the arguments property changes.</li><li>EVENT.LINKSCHANGED: Called when the links property changes.</li></ul>
+ * @see Observable#observe
+ * @param {*} event
+ * @param {function} observer
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ *
+ * models.application.observe(models.EVENT.ACTIVATE, function() {
+ * 	console.log("Application activated!");
+ * });
+ *
+ */
+ Application.prototype.observe = Observable.prototype.observe;
+
+/**
+ * Remove observer(s).
+ * @see Observable#ignore
+ * @param {*} event
+ * @param {function=} observer
+ */
+Application.prototype.ignore  = Observable.prototype.ignore;
+
+/**
+ * @see Observable#notify
+ * @param {*} event
+ * @param {*} data
+ */
+Application.prototype.notify  = Observable.prototype.notify;
+
+/**
  * An object which represents a link to a Spotify resource.
  *
  * @param {string} uri The URI.
@@ -403,6 +551,11 @@ function Album(data) {
  *
  * @param {Link|string} uri       A Link or a string containing a Spotify URI for the album.
  * @param {function=}   callback  Function to call once the Album has loaded.
+ * @return {Album}
+ * @example
+ * var a = Album.fromURI("spotify:album:5zyS3GEyL1FmDWgVXxUvj7", function(album) {
+ *     console.log("Album loaded", album.name);
+ * });
  */
 Album.fromURI = function(uri, callback) {
     var album;
@@ -524,6 +677,11 @@ function Artist(data) {
  *
  * @param {Link|string} uri       A Link or a string containing a Spotify URI for the artist.
  * @param {function=}   callback  Function to call once the Artist has loaded.
+ * @return {Artist}
+ * @example
+ * var a = Artist.fromURI("spotify:artist:4cAaMbr6CLIXAokpayCEOL", function(artist) {
+ *     console.log("Artist loaded", artist.name);
+ * });
  */
 Artist.fromURI = function(uri, callback) {
     var artist;
@@ -557,6 +715,38 @@ Object.defineProperties(Artist.prototype, {
     }
 });
 
+/**
+ * Get all the albums for the current artist.
+ * If provided, the callback parameter will be called when the albums have loaded.
+ * Only meta data for the albums will be fetched. For tracks as well, call Albums.fromURI and pass in the album URI.
+ *
+ * @param {function=}   callback  Function to call once the albums have loaded.
+ */
+Artist.prototype.getAlbums = function(callback) {
+    if (this.data && this.data.uri) {
+        var albums = {
+            loaded: false
+        };
+        callback = callback || function () {};
+        sp.core.browseUri(this.data.uri, {
+            onSuccess: function(data) {
+                if (null !== data) {
+                    albums.data = {
+                        albums: data.albums
+                    };
+                    albums.loaded = true;
+                }
+                callback(albums);
+            },
+            onFailure: function(error) {
+                callback(albums);
+            }
+        });
+
+        return albums;
+    }
+}
+
 /** @return {string} */
 Artist.prototype.toString = function() {
     return this.name;
@@ -569,12 +759,17 @@ Artist.prototype.toString = function() {
  *
  * @implements {Observable}
  * @constructor
- * @property {boolean}     playing   Indicates whether the Player is currently playing. Can be used as a setter.
- * @property {number|null} position  Get or set the current position in the currently playing track, if any.
- * @property {boolean}     repeat    Get or set repeat mode.
- * @property {boolean}     shuffle   Get or set shuffle mode.
- * @property {Track|null}  track     The currently playing track, or null if none is playing.
- * @property {number}      volume    Get or set the current volume level as a float between 0.0 and 1.0.
+ * @property {boolean}     playing              Indicates whether the Player is currently playing. Can be used as a setter.
+ * @property {number|null} position             Get or set the current position in the currently playing track, if any.
+ * @property {boolean}     repeat               Get or set repeat mode.
+ * @property {boolean}     shuffle              Get or set shuffle mode.
+ * @property {Track|null}  track                The currently playing track, or null if none is playing.
+ * @property {number}      volume               Get or set the current volume level as a float between 0.0 and 1.0.
+ * @property {boolean}     canChangeRepeat      Set to true if the repeat property can be changed. Read-only.
+ * @property {boolean}     canChangeShuffle     Set to true if the shuffle property can be changed. Read-only.
+ * @property {boolean}     canPlayPrevious      Set to true if the player can skip to a previous track. Read-only.
+ * @property {boolean}     canPlayNext          Set to true if the player can skip to a next track. Read-only.
+ * @property {boolean}     canPlayPause         Set to true if the player can be paused. Read-only.
  */
 function Player() {
     var player = this;
@@ -649,6 +844,25 @@ Player.prototype.playTrackWithContext = function(track, context, index) {
     return this;
 };
 
+
+/**
+ * Skip to the previous track.
+ * @param {boolean=} alwaysSkip
+ * @return {boolean}
+ */
+Player.prototype.previous = function(alwaysSkip) {
+    return sp.trackPlayer.skipToPreviousTrack(!!alwaysSkip);
+};
+
+/**
+ * Skip to the next track.
+ *
+ * @return {boolean}
+ */
+Player.prototype.next = function() {
+    return sp.trackPlayer.skipToNextTrack();
+};
+
 Object.defineProperties(Player.prototype, {
     context: {
         get: function() {
@@ -698,11 +912,60 @@ Object.defineProperties(Player.prototype, {
     volume: {
         get: sp.trackPlayer.getVolume,
         set: sp.trackPlayer.setVolume
+    },
+    canChangeRepeat: {
+        get: sp.trackPlayer.canChangeRepeat
+    },
+    canChangeShuffle: {
+        get: sp.trackPlayer.canChangeShuffle
+    },
+    canPlayPrevious: {
+        get: function () {
+            return sp.trackPlayer.getPlaybackControlState().previousEnabled;
+        }
+    },
+    canPlayNext: {
+        get: function () {
+            return sp.trackPlayer.getPlaybackControlState().nextEnabled;
+        }
+    },
+    canPlayPause: {
+        get: function () {
+            return sp.trackPlayer.getPlaybackControlState().playpauseEnabled;
+        }
     }
 });
 
+/**
+ * Register an observer. The Player object fires the following events: <ul><li>EVENT.CHANGE: Fires when something changes.</li></ul>
+ * @see Observable#observe
+ * @param {*} event
+ * @param {function} observer
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ *
+ * models.player.observe(models.EVENT.CHANGE, function(event) {
+ * 	console.log("Something changed!");
+ * });
+ *
+ */
 Player.prototype.observe = Observable.prototype.observe;
+
+/**
+ * Remove observer(s).
+ * @see Observable#ignore
+ * @param {*} event
+ * @param {function=} observer
+ */
 Player.prototype.ignore  = Observable.prototype.ignore;
+
+/**
+ * @see Observable#notify
+ * @param {*} event
+ * @param {*} data
+ */
 Player.prototype.notify  = Observable.prototype.notify;
 
 /**
@@ -770,6 +1033,11 @@ function Playlist(name) {
  *
  * @param {Link|string} uri       A Link or a string containing a Spotify URI for the playlist.
  * @param {function=}   callback  Function to call once the Playlist has loaded.
+ * @return {Playlist}
+ * @example
+ * var pl = Playlist.fromURI("spotify:user:spotify:playlist:3Yrvm5lBgnhzTYTXx2l55x", function(playlist) {
+ *     console.log("Playlist loaded", playlist.name);
+ * });
  */
 Playlist.fromURI = function(uri, callback) {
     var playlist;
@@ -777,7 +1045,7 @@ Playlist.fromURI = function(uri, callback) {
     if (Link.TYPE.PLAYLIST !== link.type) {
         throw new Error(l.format("Invalid playlist URI: {0}", uri));
     }
-    playlist = new Playlist(uri instanceof Link ? uri : new Link(uri));
+    playlist = new Playlist(link);
     callback = callback || id;
     if (playlist.loaded) {
         callback(playlist);
@@ -909,9 +1177,19 @@ Playlist.prototype.toString = function() {
 };
 
 /**
- * Register an observer.
+ * Register an observer. The Playlist object fires the following events: <ul><li>EVENT.LOAD: Called when the playlist has completed loading.</li><li>EVENT.UNLOAD: Called when the playlist is unloaded from memory.</li><li>EVENT.CHANGE: Called when the playlist is changed.</li><li>EVENT.ITEMS_ADDED: Called when tracks have been added to the playlist.</li><li>EVENT.ITEMS_REMOVED: Called when tracks have been removed from the playlist.</li><li>EVENT.ITEMS_MOVED: Called when tracks have been rearranged within the playlist.</li><li>EVENT.RENAME: Called when the playlist is renamed.</li></ul>
  * @param {*} event
  * @param {function} observer
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ * var playlist = models.Playlist.fromURI("spotify:user:spotify:playlist:3Yrvm5lBgnhzTYTXx2l55x");
+ *
+ * playlist.observe(models.EVENT.RENAME, function() {
+ * 	console.log("Playlist renamed!");
+ * });
+ *
  */
 Playlist.prototype.observe = Observable.prototype.observe;
 
@@ -939,6 +1217,7 @@ function temporaryName() {
  *
  * @param {Object} data        The data object used to construct the Track.
  * @property {Album|null}      album         The Album of the Track.
+ * @property {Array|null}      artists       An array of Artist objects for this track.
  * @property {boolean|null}    playable      Indicates whether the Track is available for playback or not.
  * @property {number|null}     duration      Duration of the Track in milliseconds.
  * @property {string|null}     image         Image representing the Track.
@@ -960,6 +1239,11 @@ function Track(data) {
  *
  * @param {Link|string} uri       A Link or a string containing a Spotify URI for the track.
  * @param {function=}   callback  Function to call once the Track has loaded.
+ * @return {Track}
+ * @example
+ * var t = Track.fromURI("spotify:track:3enFTlwkCRF5HUM8xX6FKB", function(track) {
+ *     console.log("Track loaded", track.name);
+ * });
  */
 Track.fromURI = function(uri, callback) {
     var track;
@@ -1048,51 +1332,409 @@ Track.prototype.toString = function() {
             this.data.artists).join(", "));
 };
 
-/**
- * @param {string} query
- * @param {function} callback
- * @constructor
- */
-function Search(query, callback) {
-    this.results = [];
-    // Call callback with Search instance as argument, when done
-    search(query, compose(callback, partial(constant, this),
-        partial(updateSearchResults, this)));
-}
+var TOPLISTTYPE = exports.TOPLISTTYPE = {
+    USER: 0, // Toplist for a user
+    REGION: 1 // Toplist for a region
+};
 
-/** @return {Playlist} */
-Search.prototype.toPlaylist = function() {
-    throw new Error("Not implemented");
+var TOPLISTREGION_EVERYWHERE = exports.TOPLISTREGION_EVERYWHERE = "everywhere";
+var TOPLISTUSER_CURRENT = exports.TOPLISTUSER_CURRENT = "";
+
+
+var TOPLISTMATCHES = exports.TOPLISTMATCHES = {
+    TRACKS: "track", // Toplist searches for tracks
+    ARTISTS: "artist", // Toplist searches for artists
+    ALBUMS: "album" // Toplist searches for albums
 };
 
 /**
- * @ignore
- * @param {Search} search
- * @param {Array} results
- * @return {Array}
+ * Object representing a Spotify top list - the most popular tracks, artists and albums
+ * for a region or user. Please note that if you request another user's toplists,
+ * you may get no results if that user hasn't publically published their toplists.
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ * 
+ * var toplist = new models.Toplist();
+ * toplist.type = models.TOPLISTTYPE.REGION;
+ * toplist.matchType = models.TOPLISTMATCHES.ARTISTS;
+ * toplist.region = "SE";
+ * 
+ * toplist.observe(models.EVENT.CHANGE, function() {
+ * 
+ * 	toplist.results.forEach(function(artist) {
+ * 		console.log(artist.name);
+ * 	});
+ * });
+ *
+ * toplist.run();
+ *
+ * @constructor
+ * @property {Models.TOPLISTTYPE} toplistType           The type of top list to fetch. Defaults to TOPLISTTYPE.USER.  Possible values: <ul><li>TOPLISTTYPE.USER: Get toplists for a user.</li><li>TOPLISTTYPE.REGION: Get toplists for a geographical region.</li></ul>
+ * @property {Models.TOPLISTMATCHES} matchType          The kind of item to match. Defaults to TOPLISTMATCHES.TRACKS. Possible values: <ul><li>TOPLISTMATCHES.TRACKS: Match tracks.</li><li>TOPLISTMATCHES.ALBUMS: Match albums.</li><li>TOPLISTMATCHES.ARTISTS: Match artists.</li></ul>
+ * @property {string} region                            Either the region as a two-character region name (such as SE for Sweden) or TOPLISTREGION_EVERYWHERE for a global toplist.
+ * @property {string} userName                          Either the Spotify username to get toplists for, or TOPLISTUSER_CURRENT for the current user.
+ * @property {Array} results                            The results returned by the top list, if any. Read-only.
+ * @property {boolean} running                          True if the top list is currently running. Read-only.
  */
-function updateSearchResults(search, results) {
-    return search.results = results;
+function Toplist() {
+    
+    this.observers = {};
+
+    this.toplistType = TOPLISTTYPE.USER;
+    this.matchType = TOPLISTMATCHES.TRACKS;
+    this.userName = TOPLISTUSER_CURRENT;
 }
 
+Object.defineProperties(Toplist.prototype, {
+   toplistType: {
+       get: function() {
+           return this._toplistType;
+       },
+       set: function(newType) {
+           this._toplistType = newType;
+       }
+   },
+   region: {
+       get: function() {
+           return this.type == TOPLISTTYPE.REGION ? this._region : "user";
+       },
+       set: function(newRegion) {
+           this._region = newRegion;
+           this.type = TOPLISTTYPE.REGION;
+       }
+   },
+   userName: {
+       get: function() {
+           return this.type == TOPLISTTYPE.USER ? this._userName : "";
+       },
+       set: function(newUserName) {
+           this._userName = newUserName;
+           this.type = TOPLISTTYPE.USER;
+       }
+   },
+   matchType: {
+       get: function() {
+           return this._matchType;
+       },
+       set: function(newMatchType) {
+           this._matchType = newMatchType;
+       }
+   },
+   results: {
+       get: function() {
+           return this._results;
+       }
+   },
+   running: {
+        get: function() {
+            return this._running;
+        }
+    }
+});
 
 /**
- * Search helper function.
- * @ignore
- * @param {string} query
- * @param {function} callback
+ * Fetches the configured toplist. Please note that if you request another user's toplists,
+ * you may get no results if that user hasn't publically published their toplists.
  */
-function search(query, callback) {
-    sp.core.search(query, {
-        onSuccess: function(data) {
-            // Mash everything together!
-            callback(map(resourceFromCoreObject,
-                data.albums.concat(data.artists,
-                    data.playlists, data.tracks)));
+Toplist.prototype.run = function() {
+
+    if (this.running === true) {
+        return;
+    }
+
+    this._running = true;
+    var self = this;
+
+    sp.social.getToplist(this.matchType, this.region, this.user, {
+
+        onSuccess: function(result) {
+
+        	self._results = [];
+
+            if (self.matchType == TOPLISTMATCHES.TRACKS) {
+                result.tracks.forEach(function(track) {
+                    self._results.push(new Track(track)); 
+                });
+            }
+
+            if (self.matchType == TOPLISTMATCHES.ARTISTS) {
+                result.artists.forEach(function(artist) {
+                    self._results.push(new Artist(artist)); 
+                });
+            }
+
+            if (self.matchType == TOPLISTMATCHES.ALBUMS) {
+                result.albums.forEach(function(album) {
+                    self._results.push(new Album(album)); 
+                });
+            }
+
+            self._running = false;
+
+            self.notify(EVENT.LOAD, self);
+            self.notify(EVENT.CHANGE, self);
+            self.notify(EVENT.ITEMS_ADDED, self);
+
         },
-        onFailure: partial(callback, null)
+
+        onFailure: function(error) {
+            self._running = false;
+            self.notify(EVENT.LOAD_ERROR, error);
+        },
+
+        onComplete: function() {
+        }
     });
 }
+
+/**
+ * Register an observer. The Toplist object fires the EVENT.CHANGE, EVENT.ITEMS_ADDED, EVENT.LOAD_ERROR events.
+ * @see Observable#observe
+ * @param {*} event
+ * @param {function} observer
+ */
+Toplist.prototype.observe = Observable.prototype.observe;
+
+/**
+ * Remove observer(s).
+ * @see Observable#ignore
+ * @param {*} event
+ * @param {function=} observer
+ */
+
+Toplist.prototype.ignore  = Observable.prototype.ignore;
+
+/**
+ * @see Observable#notify
+ * @param {*} event
+ * @param {*} data
+ */
+Toplist.prototype.notify  = Observable.prototype.notify;
+
+var SEARCHTYPE = exports.SEARCHTYPE = {
+    NORMAL:             0,  // A normal search
+    SUGGESTION:         1   // Search suggestions for a partially-entered query
+};
+
+var LOCALSEARCHRESULTS = exports.LOCALSEARCHRESULTS = {
+    IGNORE:             0, // Ignore local results entirely
+    PREPEND:            1, // Add local results to the beginning of the result list
+    APPEND:             2  // Add local results to the end of the result list
+};
+
+Object.defineProperties(Search.prototype, {
+    query: {
+        get: function() {
+            return this._query;
+        }
+    },
+    tracks: {
+        get: function() {
+            return this._tracks;
+        }
+    },
+    albums: {
+        get: function() {
+            return this._albums;
+        }
+    },
+    artists: {
+        get: function() {
+            return this._artists;
+        }
+    },
+    playlists: {
+        get: function() {
+            return this._playlists;
+        }
+    },
+    running: {
+        get: function() {
+            return this._running;
+        }
+    },
+    totalArtists: {
+        get: function() {
+            return this._totalArtists;
+        }
+    },
+    totalAlbums: {
+        get: function() {
+            return this._totalAlbums;
+        }
+    },
+    totalTracks: {
+        get: function() {
+            return this._totalTracks;
+        }
+    },
+    totalPlaylists: {
+        get: function() {
+            return this._totalPlaylists;
+        }
+    }
+});
+
+/**
+ * Object representing a Spotify search. Note that searches use a non-trivial amount of 
+ * resources in the Spotify backend - please keep this in mind when writing your application.
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ * 
+ * var search = new models.Search("Counting Crows");
+ * search.localResults = models.LOCALSEARCHRESULTS.APPEND;
+ * 
+ * search.observe(models.EVENT.CHANGE, function() {
+ * 
+ * 	search.tracks.forEach(function(track) {
+ * 		console.log(track.name);
+ * 	});
+ * });
+ *
+ * search.appendNext();
+ *
+ * @param {string} query    The query to search for. For advanced syntax, see {@link http://www.spotify.com/about/features/advanced-search-syntax/}.
+ * @param {object} options  Optional options object to configure the search. See properties for keys.
+ * @constructor
+ * @property {integer} pageSize                         The number of items to search for per "page". For performance reasons, you should set this to the lowest reasonable number for your UI. Defaults to 50.
+ * @property {boolean} searchAlbums                     Whether or not to include albums in the search results. For performance reasons, this should be set to false if not needed. Defaults to true.
+ * @property {boolean} searchArtists                    Whether or not to include artists in the search results. For performance reasons, this should be set to false if not needed. Defaults to true.
+ * @property {boolean} searchTracks                     Whether or not to include tracks in the search results. For performance reasons, this should be set to false if not needed. Defaults to true.
+ * @property {boolean} searchPlaylists                  Whether or not to include playlists in the search results. For performance reasons, this should be set to false if not needed. Defaults to true.
+ * @property {Models.LOCALSEARCHRESULTS} localResults   The behaviour of local search results. Defaults to LOCALSEARCHRESULTS.IGNORE.  Possible values: <ul><li>LOCALSEARCHRESULTS.IGNORE: Ignore local files in the search results.</li><li>LOCALSEARCHRESULTS.PREPEND: Return local files in the results before Spotify tracks.</li><li>LOCALSEARCHRESULTS.APPEND: Return local files in the results after Spotify tracks.</li></ul>
+ * @property {Models.SEARCHTYPE} searchType             The kind of search to perform. Defaults to SEARCHTYPE.NORMAL. Possible values: <ul><li>SEARCHTYPE.NORMAL: A normal Spotify search.</li><li>SEARCHTYPE.SUGGESTION: A "live" search done while the user is still typing.</li></ul>
+ * @property {string} query                             The search query. Read-only.
+ * @property {Array} tracks                             The tracks returned by the search, if any. Read-only.
+ * @property {Array} albums                             The albums returned by the search, if any. Read-only.
+ * @property {Array} artists                            The artists returned by the search, if any. Read-only.
+ * @property {Array} playlists                          The playlists returned by the search, if any. Read-only.
+ * @property {boolean} running                          True if the search is currently running. Read-only.
+ * @property {integer} totalAlbums                      The total number of albums matching the search query in the Spotify backend. Read-only.
+ * @property {integer} totalArtists                     The total number of artists matching the search query in the Spotify backend. Read-only.
+ * @property {integer} totalTracks                      The total number of tracks matching the search query in the Spotify backend. Read-only.
+ * @property {integer} totalPlaylists                   The total number of playlists matching the search query in the Spotify backend. Read-only.
+ */
+function Search(query, options) {
+    
+    options = options || {};
+    this.observers = {};
+    this._running = false;
+
+    this._tracks = [];
+    this._albums = [];
+    this._artists = [];
+    this._playlists = [];
+
+    this._totalAlbums = 0;
+    this._totalArtists = 0;
+    this._totalTracks = 0;
+    this._totalPlaylists = 0;
+
+    this.pageSize = options.pageSize ? parseInt(options.pageSize) : 50;
+    this.searchAlbums = (!options.searchAlbums || options.searchAlbums === true) ? true : false;
+    this.searchArtists = (!options.searchArtists || options.searchArtists === true) ? true : false;
+    this.searchTracks = (!options.searchTracks || options.searchTracks === true) ? true : false;
+    this.searchPlaylists = (!options.searchPlaylists || options.searchPlaylists === true) ? true : false;
+
+    this.searchType = options.searchType ? parseInt(options.searchType) : SEARCHTYPE.NORMAL;
+    this.localResults = options.localResults ? parseInt(options.localResults) : LOCALSEARCHRESULTS.IGNORE;
+
+    this._query = query;
+}
+
+/**
+ * Register an observer. The Search object fires the EVENT.CHANGE, EVENT.ITEMS_ADDED, EVENT.LOAD_ERROR events.
+ * @see Observable#observe
+ * @param {*} event
+ * @param {function} observer
+ */
+Search.prototype.observe = Observable.prototype.observe;
+
+/**
+ * Remove observer(s).
+ * @see Observable#ignore
+ * @param {*} event
+ * @param {function=} observer
+ */
+
+Search.prototype.ignore  = Observable.prototype.ignore;
+
+/**
+ * @see Observable#notify
+ * @param {*} event
+ * @param {*} data
+ */
+Search.prototype.notify  = Observable.prototype.notify;
+
+/**
+ * Fetches more search results, up to pageSize. If the search object is already in 
+ * the process of searching, does nothing.
+ */
+Search.prototype.appendNext = function() {
+
+    if (this.running === true) {
+        return;
+    }
+
+    this._running = true;
+    var self = this;
+
+    var searchOptions = {};
+    searchOptions['trackFrom'] = this.searchTracks ? this.tracks.length : 0;
+    searchOptions['trackNum'] = this.searchTracks ? this.pageSize : 0;
+    searchOptions['albumFrom'] = this.searchAlbums ? this.albums.length : 0;
+    searchOptions['albumNum'] = this.searchAlbums ? this.pageSize : 0;
+    searchOptions['artistFrom'] = this.searchArtists ? this.artists.length : 0;
+    searchOptions['artistNum'] = this.searchArtists ? this.pageSize : 0;
+    searchOptions['playlistFrom'] = this.searchPlaylists ? this.playlists.length : 0;
+    searchOptions['playlistNum'] = this.searchPlaylists ? this.pageSize : 0;
+
+    sp.core.searchEx(this.query, searchOptions, this.searchType, this.localResults, {
+
+        onSuccess: function(result) {
+
+            result.artists.forEach(function(artist) {
+                self._artists.push(new Artist(artist)); 
+            });
+
+            result.albums.forEach(function(album) {
+               self._albums.push(new Album(album)); 
+            });
+
+            result.tracks.forEach(function(track) {
+               self._tracks.push(new Track(track)); 
+            });
+
+            result.playlists.forEach(function(aPlaylist) {
+               self._playlists.push(Playlist.fromURI(aPlaylist.uri));
+            });
+
+            self._totalAlbums = result.total_albums;
+            self._totalArtists = result.total_artists;
+            self._totalTracks = result.total_tracks;
+            self._totalPlaylists = result.total_playlists;
+
+            self._running = false;
+
+            self.notify(EVENT.LOAD, self);
+            self.notify(EVENT.CHANGE, self);
+            self.notify(EVENT.ITEMS_ADDED, self);
+        },
+
+        onFailure: function(error) {
+            self._running = false;
+            self.notify(EVENT.LOAD_ERROR, error);
+        },
+
+        onComplete: function() {
+        }
+    });
+}
+
 
 /**
  * Construct a User from an Object.
@@ -1116,6 +1758,11 @@ function User(data) {
  *
  * @param {Link|string} uri       A Link or a string containing a Spotify URI for the user.
  * @param {function=}   callback  Function to call once the User has loaded.
+ * @return {User}
+ * @example
+ * var u = User.fromURI("spotify:user:nlogax", function(user) {
+ *     console.log("User loaded", user.name);
+ * });
  */
 User.fromURI = function(uri, callback) {
     var user;
@@ -1170,28 +1817,42 @@ User.prototype.toString = function() {
 /**
  * Object representing the current session.
  * @constructor
- * @property {Session.STATE} state     The current connection state.
- * @property {string}        country   ISO 3166-1 alpha-2 country code of the logged in user.
- * @property {Array.<User>}  friends   The friends of the logged in user.
- * @property {string}        language  The current language as an IANA language code.
+ * @property {Session.STATE} state              The current connection state.
+ * @property {string}        country            ISO 3166-1 alpha-2 country code of the logged in user.
+ * @property {string}        language           The current language as an IANA language code.
+ * @property {boolean}       developer          Set to true if the current user has a Spotify developer account.
+ * @property {string}        anonymousUserID    Get an anonymous user ID, which is unique per-user, per-application.
  */
 function Session() {
     this._user = null;
+    this.observers = {};
+
+    sp.core.addEventListener("login", sendEvent.bind(this));
+    sp.core.addEventListener("logout", sendEvent.bind(this));
+    sp.core.addEventListener("loginModeChanged", sendEvent.bind(this));
 }
 
 Object.defineProperties(Session.prototype, {
-    state: {
-        get: sp.core.getLoginMode
+    anonymousUserID: {
+        get: sp.core.getAnonymousUserId
     },
     country: {
         get: function() {
             return sp.core.country;
         }
     },
+    developer: {
+        get: function() {
+            return sp.core.developer;
+        }
+    },
     language: {
         get: function() {
             return sp.core.language;
         }
+    },
+    state: {
+        get: sp.core.getLoginMode
     },
     user: {
         get: function() {
@@ -1201,6 +1862,37 @@ Object.defineProperties(Session.prototype, {
         }
     }
 });
+
+/**
+ * Register an observer. The Session object fires the following events: <ul><li>EVENT.LOGIN: Fires when the user logs into the Spotify client. Will not be fired if your application isn't active when this happens.</li><li>EVENT.LOGOUT: Fires when the user logs out from Spotify client. Will not be fired if your application isn't active when this happens.</li><li>EVENT.STATECHANGED: Fired when the state property changes.</li></ul>
+ * @see Observable#observe
+ * @param {*} event
+ * @param {function} observer
+ *
+ * @example
+ * var sp = getSpotifyApi(1);
+ * var models = sp.require('sp://import/scripts/api/models');
+ *
+ * models.session.observe(models.EVENT.STATECHANGED, function() {
+ * 	console.log("Session state changed!");
+ * });
+ */
+Session.prototype.observe = Observable.prototype.observe;
+
+/**
+ * Remove observer(s).
+ * @see Observable#ignore
+ * @param {*} event
+ * @param {function=} observer
+ */
+Session.prototype.ignore  = Observable.prototype.ignore;
+
+/**
+ * @see Observable#notify
+ * @param {*} event
+ * @param {*} data
+ */
+Session.prototype.notify  = Observable.prototype.notify;
 
 /**
  * Connection states.
@@ -1222,7 +1914,6 @@ var _starredPlaylist = null;
  * @constructor
  * @property {Array.<Album>}    albums           All albums in the user's library.
  * @property {Array.<Artist>}   artists          All artists in the user's library.
- * @property {Array.<Playlist>} playlists        All playlists in the user's library.
  * @property {Playlist}         starredPlaylist  The user's playlist of starred tracks.
  * @property {Array.<Track>}    tracks           All tracks in the user's library.
  */
@@ -1264,6 +1955,7 @@ Object.defineProperties(Library.prototype, {
 
 /**
  * Social.
+ * @ignore
  * @constructor
  * @property {Array.<User>} favorites  Users marked as favorites.
  * @property {Array.<User>} friends    All friends.
@@ -1284,6 +1976,31 @@ Object.defineProperties(Social.prototype, {
         }
     }
 });
+
+function Event(name) {
+    this.name = name;
+}
+
+/**
+ * @ignore
+ * @this {Observable}
+ * @param {string} name
+ */
+function sendEvent(name) {
+    this.notify(name, new Event(name));
+}
+
+
+/**
+ * Get the contents of the specified file.
+ *
+ * @param {string} filename Filename relative to the app root
+ * @return {string} The contents of the file
+ */
+function readFile(filename) {
+    return sp.core.readFile(filename);
+}
+
 
 /**
  * Construct a pretty object from a "raw" one

@@ -19,15 +19,6 @@ var token 	= sp.require("scripts/token");
 var toplist = sp.require("scripts/toplist");
 var tokenInput = new token.TokenInput("uris");
 
-var PRESENCE_TYPES = {
-	UNKNOWN: -1,
-	FACEBOOK_ACTIVITY: 0,
-	TRACK_FINISHED_PLAYING: 1,
-	PLAYLIST_PUBLISHED: 2,
-	PLAYLIST_TRACK_ADDED: 3,
-	PLAYLIST_TRACK_STARRED: 4
-};
-
 var MSGBAR_TYPES = {
 	INFORMATION: 0,
 	WARNING: 1,
@@ -46,38 +37,6 @@ var isFacebookProfile = false;
 
 var relations = sp.social.relations;
 var favorites = sp.social.getFavorites();
-
-// SUB to Hermes PresenceStates when any of these events happen, and update profile page
-r.merge(login, r.merge(windowLoad, argsChanged)).subscribe(loadUser);
-
-function subHermes(data) {
-	sp.core.getHermes("SUB", "hm://presence/user/",
-		[data.canonicalUsername], {
-		onSuccess: function() {},
-		onFailure: partial(sp.core.showClientMessage, MSGBAR_TYPES.ERROR, _g("sGenericPresenceError")),
-		onComplete: function() {}
-	});
-}
-
-function getHermes(data){
-	sp.core.getHermes("GET", "hm://presence/user/",
-		[data.canonicalUsername], {
-		onSuccess: function() {
-			var state;
-			try {
-				state = sp.core.parseHermesReply("PresenceState", arguments[0]);
-				hermes.stringFromPresenceState(state, function(s) {
-					dom.queryOne(".activity").innerHTML = s;
-				});
-			}
-			catch (err) {
-				return false;
-			}
-		},
-		onFailure: partial(sp.core.showClientMessage, MSGBAR_TYPES.ERROR, _g("sGenericPresenceError")),
-		onComplete: function() {}
-	});
-}
 
 function _updateFavoriteButton(button) {
 	var user = button.user;
@@ -397,23 +356,6 @@ function init(user, isSelf) {
 		e.target.offsetWidth;
 		e.target.classList.remove("success");
 	});
-
-	// Hermes event received, update activity
-	r.fromDOMEvent(sp.core, "hermes").subscribe(function(e) {
-		var uri = e.data[0],
-			username,
-			state;
-
-		if (user.username) {
-			if (uri.indexOf("hm://presence/user/") !== -1) {
-				username = uri.slice("hm://presence/user/".length, -1); // Removes last slash
-				if (username.decodeForText() == user.username.decodeForText()) {
-					state = sp.core.parseHermesReply("PresenceState", e.data[1]);
-					fillActivityWithState(state);
-				}
-			}
-		}
-	});
 }
 
 function initialize(data, isSelf) {
@@ -422,12 +364,8 @@ function initialize(data, isSelf) {
 
 	if (data) {
 		body.className = '';
-		if (!isFacebookProfile) {
-			getHermes(data);
-			subHermes(data);
-		} else {
+		if (isFacebookProfile)
 			body.className = 'facebook';
-		}
 
 		template.textContent = fs.readFile("templates/header.html");
 
@@ -478,3 +416,5 @@ function loadUser() {
 		userIsOffline();
 	}
 }
+
+r.merge(login, r.merge(windowLoad, argsChanged)).subscribe(loadUser);

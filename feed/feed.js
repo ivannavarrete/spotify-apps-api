@@ -288,7 +288,7 @@ function updateList(fl, newItems) {
 		ix = friendIndex(fl, newItems[i]);
 		if (-1 === ix) {
 			for (var j = 0, m = fl.items.length; j < m; ++j) {
-				if (newItems[i].data.name.toLowerCase() < fl.items[j].data.name.toLowerCase()) {
+				if (newItems[i].data.name.decodeForText().toLowerCase() < fl.items[j].data.name.decodeForText().toLowerCase()) {
 					ix = j;
 					break;
 				}
@@ -356,7 +356,7 @@ function Friend(data) {
 	var friend = this;
 	var el = document.createElement("a");
 	el.href = data.uri;
-	el.title = data.name;
+	el.title = data.name.decodeForText();
 	el.classList.add("droppable");
 	el.classList.add("no-activity");
 	el.classList.add("friend");
@@ -457,9 +457,9 @@ function updateFriend(friend, data) {
 			"<div class=\"name\"></div>",
 			"<div class=\"activity\"></div>");
 	}
-	if (!friend.data || (friend.data.name !== data.name)) {
+	if (!friend.data || (friend.data.name.decodeForText() !== data.name.decodeForText())) {
 		nameEl = dom.queryOne(".name", el);
-		nameEl.textContent = data.name;
+		nameEl.textContent = data.name.decodeForText();
 	}
 	if (!friend.data || (friend.data.icon !== data.icon)) {
 		image = new ui.SPImage(data.icon);
@@ -781,7 +781,7 @@ function Item(data, callback) {
 	//item.date = new ItemDate(item);
 
 	node.className = "item type-" + type;
-	node.title = data.user.name;
+	node.title = data.user.name.decodeForText();
 	node.href = data.user.uri;
 
 	node.appendChild(image.node);
@@ -836,7 +836,7 @@ function Item(data, callback) {
 				relativeNode: item.node.parentNode.parentNode
 			});
 		} else {
-			sp.core.showClientMessage(0, lang.format(_("unsupportedDropType"), sp.core.user.name));
+			sp.core.showClientMessage(0, lang.format(_("unsupportedDropType"), sp.core.user.name.decodeForText()));
 		}
 	});
 }
@@ -852,7 +852,7 @@ function getArtwork(uri, item) {
         if (!metadata) return;
         image = new ui.SPImage(metadata.album.cover, uri + "?action=browse",
             lang.format(lang.getString(catalog, "Misc", "Item by artists"),
-                metadata.name, stringFromArtistsArray(metadata.artists)));
+                metadata.name.decodeForHTML(), stringFromArtistsArray(metadata.artists)));
         image.node.classList.add("cover");
         item.node.appendChild(image.node);
     });
@@ -1249,7 +1249,7 @@ MiniPlayer.prototype.loadURI = function(uri) {
 			player.play(false);
 		}
 	}
-	player.button.title = player.resource.name;
+	player.button.title = player.resource.name.decodeForText();
 	player.button.href = uri;
 };
 
@@ -1273,7 +1273,7 @@ function playPlaylist(player, pl) {
 		player.node.appendChild(image.node);
 	}
 	player.nameNode.innerHTML = lang.format("<a href=\"{0}\">{1}</a>", pl.uri.decodeForHTML(), pl.name.decodeForHTML());
-	player.infoNode.textContent = pl.data.owner.name;
+	player.infoNode.textContent = pl.data.owner.name.decodeForText();
 	return pl;
 }
 
@@ -1284,13 +1284,14 @@ MiniPlayer.prototype.isCurrentlyPlaying = function() {
 
 MiniPlayer.prototype.onSameSong = function() {
 	var currentlyPlaying = sp.trackPlayer.getNowPlayingTrack();
+	var context = sp.trackPlayer.getPlayingContext();
 	var uri;
 	if (null === this.resource || null === currentlyPlaying) {
 		return false;
 	}
 	uri = this.resource.uri;
 	if (uri === currentlyPlaying.track.uri ||
-		currentlyPlaying.source === uri) {
+		context.length && context[0] === uri) {
 			return true;
 		}
 	return false;

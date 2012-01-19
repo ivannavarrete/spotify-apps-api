@@ -34,7 +34,7 @@ function GoogleTracker(id) {
  */
 GoogleTracker.prototype.track = function(identifier) {
     var src = l.format(_googleAnalyticsURL, encodeURIComponent(identifier), this.id,
-                       l.format(_uniqueID, this.userId, Date.now() / 1000));
+                       l.format(_uniqueID, this.userId, Math.floor(Date.now() / 1000)));
     var img = new Image();
     img.src = src;
 }
